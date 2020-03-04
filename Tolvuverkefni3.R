@@ -5,22 +5,22 @@ library(lubridate) # pakki med follum fyrir vinnslu med dagsetningar (date eda d
 library(ggplot2)
 oo <- read.csv(file = 'data98.csv', sep =',')
 oo = oo %>% rename("a" = "recid",
-                   "b" = "reit",
-                   "c" = "smrt",
-                   "d" = "tog_nr",
-                   "e" = "dag",
-                   "f" = "man",
-                   "g" = "dyp_min",
-                   "h" = "dyp_max",
-                   "i" = "vf",
-                   "j" = "nr",
-                   "k" = "le",
-                   "l" = "ky",
-                   "m" = "kt",
-                   "n" = "aldur",
-                   "o" = "osl",
-                   "p" = "sl",
-                   "q" = "li")
+                   "area" = "reit",
+                   "sub_area" = "smrt",
+                   "trawl_num" = "tog_nr",
+                   "day" = "dag",
+                   "month" = "man",
+                   "min_depth" = "dyp_min",
+                   "max_depth" = "dyp_max",
+                   "equipment" = "vf",
+                   "fish_num" = "nr",
+                   "fish_length" = "le",
+                   "fish_gender" = "ky",
+                   "sex_maturity" = "kt",
+                   "fish_age" = "aldur",
+                   "fish_mass" = "osl",
+                   "gutted_mass" = "sl",
+                   "liver_mass" = "li")
 
 r2d <-function(r)
 {
