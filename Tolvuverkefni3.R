@@ -6,26 +6,28 @@ library(ggplot2)
 oo <- read.csv(file = 'data98.csv', sep =',')
 oo <- subset(oo, select = -c(vf))
 oo = oo %>% rename("a" = "recid",
-                   "b" = "reit",
-                   "c" = "smrt",
-                   "d" = "tog_nr",
-                   "e" = "dag",
-                   "f" = "man",
-                   "g" = "dyp_min",
-                   "h" = "dyp_max",
-                   "j" = "nr",
-                   "k" = "le",
-                   "l" = "ky",
-                   "m" = "kt",
-                   "n" = "aldur",
-                   "o" = "osl",
-                   "p" = "sl",
-                   "q" = "li")
 oo <- oo %>% mutate(season = recode_factor(month, "1"="winter", "2"="winter",
                                            "12"="winter", "3"="spring",
                                            "4"="spring","5"="spring","6"="summer","7"="summer",
                                            "8"="summer","9"="autumn","10"="autumn","11"="autumn"))
 
+
+                   "area" = "reit",
+                   "sub_area" = "smrt",
+                   "trawl_num" = "tog_nr",
+                   "day" = "dag",
+                   "month" = "man",
+                   "min_depth" = "dyp_min",
+                   "max_depth" = "dyp_max",
+                   "equipment" = "vf",
+                   "fish_num" = "nr",
+                   "fish_length" = "le",
+                   "fish_gender" = "ky",
+                   "sex_maturity" = "kt",
+                   "fish_age" = "aldur",
+                   "fish_mass" = "osl",
+                   "gutted_mass" = "sl",
+                   "liver_mass" = "li")
 
 r2d <-function(r)
 {
