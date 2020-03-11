@@ -16,12 +16,12 @@ oo = oo%>%rename("area" = "reit",
                    "fish_num" = "nr",
                    "fish_length" = "le",
                    "fish_gender" = "ky",
-                   "sex_maturity" = "kt",
+                   "breeding_age" = "kt",
                    "fish_age" = "aldur",
                    "fish_mass" = "osl",
                    "gutted_mass" = "sl",
                    "liver_mass" = "li")
-
+# Function to determine the longtitude and latitude
 r2d <-function(r)
 {
     lat <- floor(r/100)
@@ -31,10 +31,8 @@ r2d <-function(r)
     lat <- lat + 60 + halfb + 0.25
     data.frame(lat = lat, lon = lon)
 }
-reitir<-unique(oo$area)
+
 reitir<-oo$area
-# x<-r2d(reitir)$lon
-# y<-r2d(reitir)$lat
 long <- r2d(reitir)$lon
 lat <- r2d(reitir)$lat
 oo <- cbind(oo, long, lat)
@@ -42,14 +40,30 @@ plot(long,lat,type='n')
 text(long,lat,as.character(reitir))
 
 
-oo <- oo %>% mutate(season = recode_factor(long, lat, "1"="NE", "2"="SE",
-                                           "12"="SW", "3"="NW"))
-oo <- mutate(oo, relative_area = case_when(
-    long >=65 && lat >= -19  ~ "NE",
-    long <65 && lat >= -19  ~ "NW",
-    long <65 && lat < -19  ~ "SW",
-    long >=65 && lat < -19  ~ "SE"
-    ))
-rm(lat,long,reitir,x,y)
+oo <- oo %>%
+    mutate(
+        quadrant = case_when(
+            long >=(-19) & lat >= 65  ~ "NE",
+            long <(-19) & lat >= 65  ~ "NW",
+            long <(-19) & lat < 65  ~ "SW",
+            TRUE ~ "SE"))
 
+rm(lat,long,reitir)
 
+oo <- mutate(oo, breeding_age2 = case_when(
+    breeding_age > 1 ~ TRUE,
+    breeding_age == 1  ~ FALSE
+))
+
+# b
+
+nrow(oo[oo$breeding_age2, oo$quadrant == "SW",])
+nrow(oo[oo$quadrant = "SE",])
+nrow(subset(oo, breeding_age2==TRUE,fish_mass>2000))
+#)
+
+tibble(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
+       nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NW")),
+       nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SW")),
+       nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SE")))
+       
