@@ -61,9 +61,26 @@ nrow(oo[oo$breeding_age2, oo$quadrant == "SW",])
 nrow(oo[oo$quadrant = "SE",])
 nrow(subset(oo, breeding_age2==TRUE,fish_mass>2000))
 #)
+NE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
+        nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "NE")))
+NW <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NW")),
+        nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "NW")))
+SW <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SW")),
+        nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "SW")))
+SE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SE")),
+        nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "SE")))
+adulthood <- c('Breeding', 'Non_breeding')
+count <- tibble(adulthood,NE,NW,SW,SE)
 
-tibble(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
-       nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NW")),
-       nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SW")),
-       nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SE")))
-       
+knitr::kable(tibble(adulthood,NE,NW,SW,SE),
+      align = 'ccc', table.attr = "class=\"table\"", 
+      format = "html")
+
+count <- gather(count,key=area, value=count,
+             c(NE,NW,SW,SE))
+
+ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
+  geom_bar(position="dodge", stat="identity") +
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  labs(title="Number of fishes by sea quadrant",x="quadrant")
+rm(adulthood, NE,NW,SE,SW,count)
