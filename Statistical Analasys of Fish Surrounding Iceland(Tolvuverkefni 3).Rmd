@@ -4,10 +4,7 @@ author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz(orr3@hi.is)"
 date: "3/26/2020"
 output: html_document
 ---
-
-
 Importing libraries needed
-
 ```{r}
 library(tidyverse)
 library(readr)
