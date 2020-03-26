@@ -1,0 +1,105 @@
+---
+title: "Statistical Analasys of Fish Surrounding Iceland (Tölvuverkefni 3)"
+author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz(orr3@hi.is)"
+date: "3/26/2020"
+output: html_document
+---
+
+
+Importing libraries needed
+
+```{r}
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+```
+
+
+First we read the csv file and create a database to work with within R. We then rename the columns of the database to be more readable names. The data in question was collected by "Hafransóknarstofnun" in 1998. The data describes various properties of fish caught by trawl in various areas around Iceland.
+
+```{r}
+#reading .csv file
+oo <- read.csv(file = 'data98.csv', sep =',')
+oo <- subset(oo, select = -c(recid,vf))
+# Change the names to more usefull names
+oo = oo%>%rename("area" = "reit",
+                   "sub_area" = "smrt",
+                   "trawl_num" = "tog_nr",
+                   "day" = "dag",
+                   "month" = "man",
+                   "min_depth" = "dyp_min",
+                   "max_depth" = "dyp_max",
+                   "fish_num" = "nr",
+                   "fish_length" = "le",
+                   "fish_gender" = "ky",
+                   "breeding_age" = "kt",
+                   "fish_age" = "aldur",
+                   "fish_mass" = "osl",
+                   "gutted_mass" = "sl",
+                   "liver_mass" = "li")
+```
+
+Here is a very rough outline of where the area codes correspond to. The empty are in the center is Iceland.
+
+```{r}
+plot(long,lat,type='n')
+text(long,lat,as.character(reitir))
+```
+
+Here we define a function that converts the area code to longitude and latitude coordinates. We also create columns with the longitude and latitude of the area in question.
+
+```{r}
+# Function to determine the longitude and latitude
+r2d <-function(r)
+{
+    lat <- floor(r/100)
+    lon <- (r - lat * 100) %% 50
+    halfb <- (r - 100 * lat - lon)/100
+    lon <-  - (lon + 0.5)
+    lat <- lat + 60 + halfb + 0.25
+    data.frame(lat = lat, lon = lon)
+}
+#Creates columns of longitude and latitude based off area
+reitir<-oo$area
+long <- r2d(reitir)$lon
+lat <- r2d(reitir)$lat
+oo <- cbind(oo, long, lat)
+```
+
+Next we create four quadrants representing NE, NW, SW, SE and split the areas down based on their coordinates. We also remove the variables that are no longer needed.
+
+```{r}
+#Creates quadrant column
+oo <- oo %>%
+    mutate(
+        quadrant = case_when(
+            long >=(-19) & lat >= 65  ~ "NE",
+            long <(-19) & lat >= 65  ~ "NW",
+            long <(-19) & lat < 65  ~ "SW",
+            TRUE ~ "SE"))
+
+rm(lat,long,reitir)
+```
+
+Next we create a new column in our table to say if the fish is sexually mature based of the more complex assignment of maturity. We assign the values TRUE and FALSE accordingly.
+
+```{r}
+oo <- mutate(oo, breeding_age2 = case_when(
+    breeding_age > 1 ~ TRUE,
+    breeding_age == 1  ~ FALSE
+))
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
