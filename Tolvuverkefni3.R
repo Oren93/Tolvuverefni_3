@@ -55,12 +55,13 @@ oo <- mutate(oo, breeding_age2 = case_when(
     breeding_age == 1  ~ FALSE
 ))
 
-# b
+# b (not finished)
 
-nrow(oo[oo$breeding_age2, oo$quadrant == "SW",])
-nrow(oo[oo$quadrant = "SE",])
-nrow(subset(oo, breeding_age2==TRUE,fish_mass>2000))
-#)
+#nrow(oo[oo$breeding_age2, oo$quadrant == "SW",])
+#nrow(oo[oo$quadrant = "SE",])
+#nrow(subset(oo, breeding_age2==TRUE,fish_mass>2000))
+
+#
 NE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
         nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "NE")))
 NW <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NW")),

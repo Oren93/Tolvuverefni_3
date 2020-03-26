@@ -1,11 +1,11 @@
 ---
 title: "Statistical Analasys of Fish Surrounding Iceland (Tölvuverkefni 3)"
 author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz(orr3@hi.is)"
-date: "3/26/2020"
+date: "26/3/2020"
 output: html_document
 ---
 Importing libraries needed
-```{r}
+```{r packages, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -13,6 +13,7 @@ library(lubridate)
 library(ggplot2)
 ```
 
+## a)
 
 First we read the csv file and create a database to work with within R. We then rename the columns of the database to be more readable names. The data in question was collected by "Hafransóknarstofnun" in 1998. The data describes various properties of fish caught by trawl in various areas around Iceland.
 
@@ -38,13 +39,6 @@ oo = oo%>%rename("area" = "reit",
                    "liver_mass" = "li")
 ```
 
-Here is a very rough outline of where the area codes correspond to. The empty are in the center is Iceland.
-
-```{r}
-plot(long,lat,type='n')
-text(long,lat,as.character(reitir))
-```
-
 Here we define a function that converts the area code to longitude and latitude coordinates. We also create columns with the longitude and latitude of the area in question.
 
 ```{r}
@@ -63,6 +57,14 @@ reitir<-oo$area
 long <- r2d(reitir)$lon
 lat <- r2d(reitir)$lat
 oo <- cbind(oo, long, lat)
+```
+
+
+Here is a very rough outline of where the area codes correspond to. The empty are in the center is Iceland.
+
+```{r}
+plot(long,lat,type='n')
+text(long,lat,as.character(reitir))
 ```
 
 Next we create four quadrants representing NE, NW, SW, SE and split the areas down based on their coordinates. We also remove the variables that are no longer needed.
@@ -89,6 +91,9 @@ oo <- mutate(oo, breeding_age2 = case_when(
 ))
 ```
 
+## b)
+
+Now we construct a table that shows the total amount of sexually mature and immature fish that we caught in each area. 
 ```{r}
 
 ```
