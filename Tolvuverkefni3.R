@@ -84,3 +84,23 @@ ggplot(count, aes(fill=adulthood, y=count, x=area)) +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="Number of fishes by sea quadrant",x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
+
+# C lið
+C_Vector <- c(nrow(oo),mean(oo$fish_length), mean(oo$fish_mass))
+age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
+sd(age_ordered$length)
+
+sd_by_age <- c()
+age <- c()
+for (i in 1: max(age_ordered$age)) {
+  x <- filter(age_ordered, age == i)
+  sd_by_age <- append(sd_by_age, sd(x$length))
+  age <- append(age, nrow(x))
+}
+rm(x)
+
+
+ggplot(age_ordered, aes(x = age, y = length))+
+  geom_point()+
+  geom_smooth(method = "loess") 
+
