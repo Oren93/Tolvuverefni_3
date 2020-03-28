@@ -125,8 +125,8 @@ q1 = sample_n(q1 ,50)
 set.seed(0601)
 q2 = sample_n(q2 ,50)
 
-#combines temp dataframes
+#combines temp dataframes, removes temp dataframes
 fish_tbl = rbind(q1, q2)
-
+rm(q1, q2)
 
 
