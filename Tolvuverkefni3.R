@@ -82,10 +82,10 @@ count <- gather(count,key=area, value=count,
 ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
-  labs(title="Number of fishes by sea quadrant",x="quadrant")
+  labs(title="Number of fish by sea quadrant",x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
 
-# C lið
+# C)
 C_Vector <- c(nrow(oo),mean(oo$fish_length), mean(oo$fish_mass))
 age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
 sd(age_ordered$length)
@@ -116,6 +116,31 @@ ggplot(plot.data, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identi
 
 ggplot(plot.data, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
+
+
+# d)
+#Creates a dataframe with 100 random fish from two random quadrants
+#temp column
+oo <- oo %>% mutate(quadrant_num = recode_factor
+                    (quadrant, "NE"="1", "NW"="2",
+                      "SW"="3", "SE"="4"))
+
+#creates temp dataframe with random quadrants
+set.seed(0601)
+q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
+set.seed(0601)
+q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
+
+#takes 50 random values from the temp dataframes
+set.seed(0601)
+q1 = sample_n(q1 ,50)
+set.seed(0601)
+q2 = sample_n(q2 ,50)
+
+#combines temp dataframes, removes temp dataframes
+fish_tbl = rbind(q1, q2)
+rm(q1, q2)
+
 
 # F
 library(reshape2)
@@ -227,4 +252,3 @@ ggplot(data = world) +
   geom_sf(data = sites, size = 4, shape = 23, fill = "red") +
   ggtitle("Fish around Iceland", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)
-
