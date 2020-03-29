@@ -66,25 +66,25 @@ SE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SE")),
         nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "SE")))
 adulthood <- c('Breeding', 'Non_breeding')
 # table of quadrant, count, and percent of adulthood per region
-count <- tibble(adulthood,NE,NW,SW,SE)
+fish_count <- tibble(adulthood,NE,NW,SW,SE)
+fish_count <- gather(fish_count,key=area, value=count,
+                c(NE,NW,SW,SE))
 library(plyr) # needed only for ddply
-count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
+fish_count <- ddply(fish_count,.(area),transform,percent = 100*count/sum(count))
 unloadNamespace("plyr") # unloading because it messes up the rest of the code
 
 knitr::kable(tibble(adulthood,NE,NW,SW,SE),
       align = 'ccc', table.attr = "class=\"table\"", 
       format = "html")
 
-count <- gather(count,key=area, value=count,
-             c(NE,NW,SW,SE))
 # ==== plot of count per quadrant, might be NOT NECESSARY  ==========
-ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
+ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="Number of fish by sea quadrant",x="quadrant")
 #================================================================
 
-ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
+ggplot(fish_count, aes(fill=adulthood, y=percent, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="percent of adult and young fish per quadrant",subtitle = "(total in each quadrant is 100%)",
@@ -105,6 +105,9 @@ for (i in 1: max(age_ordered$age)) {
 }
 rm(x,i)
 
+library(plyr) # needed only for ddply
+count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
+unloadNamespace("plyr") # unloading because it messes up the rest of the code
 
 age_ordered <- ddply(age_ordered,.(age),transform,length.New = mean(length))
 ggplot(age_ordered, aes(x = age, y = length))+
