@@ -85,6 +85,17 @@ ggplot(count, aes(fill=adulthood, y=count, x=area)) +
   labs(title="Number of fish by sea quadrant",x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
 
+#count$adulthood <- as.numeric(as.character(yyz$b))
+count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
+#count <- count %>% mutate(percent = count/total)
+
+
+ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
+  geom_bar(position="dodge", stat="identity") +
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  labs(title="Number of fish by sea quadrant",x="quadrant")
+rm(adulthood, NE,NW,SE,SW,count)
+
 # C)
 C_Vector <- c(nrow(oo),mean(oo$fish_length), mean(oo$fish_mass))
 age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
@@ -99,20 +110,12 @@ for (i in 1: max(age_ordered$age)) {
 }
 rm(x,i)
 
-## to fix red dots on average:
+
+age_ordered <- ddply(age_ordered,.(age),transform,length.New = mean(length))
 ggplot(age_ordered, aes(x = age, y = length))+
-  geom_point()+
+  geom_point(data = age_ordered, aes( y = length.New), size = 4, 
+           shape = 21, fill = "red")+
   geom_smooth(method = "loess") 
-
-## average table to plot, attempting to fix previous plot
-plot.data <- melt(tapply(age_ordered$length, age_ordered$age,mean), varnames="age", value.name="length")
-
-ggplot(plot.data, aes(x = age, y = length))+
-  geom_point()+
-  geom_smooth(method = "loess") 
-##### NOTE: none of the two chunks above are perfect!
-ggplot(plot.data, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
-  theme_linedraw() + labs(title="Length of fish by age")
 
 ggplot(plot.data, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
@@ -193,23 +196,21 @@ ggplot(oo, aes( x=fish_length)) +
 #################################################################
 # Bonus attempt
   # need to sort out and remove useless libraries
-library(tidyverse)
-library(knitr)    
-library(broom)
-library(stringr)
-library(modelr)
-library(forcats)
-library(ggmap)
-library(maps)
-library(tidyverse)
-library(sf)
-library("ggplot2")
+#library(tidyverse)
+#library(knitr)    
+#library(broom)
+#library(stringr)
+#library(modelr)
+#library(forcats)
+#library(ggmap)
+#library(maps)
+library(sf)## for the different approach
 theme_set(theme_bw())
 library("sf")
-library("sp")
-library("rnaturalearth")
-library("rnaturalearthdata")
-library("rgeos")
+#library("sp")
+library("rnaturalearth")##
+library("rnaturalearthdata")##
+#library("rgeos")
 
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
@@ -239,9 +240,9 @@ ggplot(data = world) +
   xlab("Longitude") + ylab("Latitude") +
   ggtitle("World map", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-#geom_text(data=sites,aes(x=longitude,y=latitude,label=
-#                          paste0("(", x,",",y)),hjust=0, vjust=0)
-geom_text(data=sites,aes(x=longitude,y=latitude,label=unique(oo$area)),hjust=0, vjust=0)
+geom_text(data=sites,aes(x=longitude,y=latitude,label=
+                          paste0("(", x,",",y)),hjust=0, vjust=0)
+#geom_text(data=sites,aes(x=longitude,y=latitude,label=unique(oo$area)),hjust=0, vjust=0)
 
 #different approach
 sites <- st_as_sf(sites, coords = c("longitude", "latitude"), 
