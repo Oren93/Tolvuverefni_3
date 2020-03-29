@@ -109,17 +109,39 @@ count <- tibble(adulthood,NE,NW,SW,SE)
 knitr::kable(tibble(adulthood,NE,NW,SW,SE),
       align = 'ccc', table.attr = "class=\"table\"", 
       format = "html")
+```
 
+
+```{r}
 count <- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
 
+library(plyr)
+count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
+unloadNamespace("plyr")
+
+#percent of fish of breeding age by quadrant
+ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
+  geom_bar(position="dodge", stat="identity") +
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  labs(title="Percentage of fish by sea quadrant",x="quadrant")
+```
+
+
+```{r}
+#amount of fish of breeding age by quadrant
 ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
-  labs(title="Number of fishes by sea quadrant",x="quadrant")
+  labs(title="Number of fish by sea quadrant",x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
 ```
 
+
+```{r}
+
+```
+
 ```{r}
 
 ```
@@ -127,3 +149,13 @@ rm(adulthood, NE,NW,SE,SW,count)
 ```{r}
 
 ```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
