@@ -15,7 +15,7 @@ library(ggplot2)
 
 ## a)
 
-First we read the csv file and create a database to work with within R. We then rename the columns of the database to be more readable names. The data in question was collected by "Hafransóknarstofnun" in 1998. The data describes various properties of fish caught by trawl in various areas around Iceland.
+First we read the csv file and create a database to work with within R. We then rename the columns of the database to be more readable names. The data in question was collected by "Hafransóknarstofnun" in 1998. The data describes various properties of fish caught by trawl in around Iceland.
 
 ```{r}
 #reading .csv file
