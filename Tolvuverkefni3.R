@@ -90,7 +90,7 @@ count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
 #count <- count %>% mutate(percent = count/total)
 
 
-ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
+ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="Number of fish by sea quadrant",x="quadrant")
@@ -143,18 +143,6 @@ q2 = sample_n(q2 ,50)
 #combines temp dataframes, removes temp dataframes
 fish_tbl = rbind(q1, q2)
 rm(q1, q2)
-
-
-
-#Paired t test
-area1 <- subset(q1,  quadrant == "NW", fish_length,
-                 drop = TRUE)
-area2 <- subset(q2,  quadrant == "SE", fish_length,
-                drop = TRUE)
-#calculates the result and saves as dataframe
-result <- t.test(area1, area2, paired = TRUE)
-#result$statistic
-
 
 
 # F
