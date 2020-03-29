@@ -56,11 +56,6 @@ oo <- mutate(oo, breeding_age2 = case_when(
 ))
 
 # b
-
-nrow(oo[oo$breeding_age2, oo$quadrant == "SW",])
-nrow(oo[oo$quadrant = "SE",])
-nrow(subset(oo, breeding_age2==TRUE,fish_mass>2000))
-#)
 NE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
         nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "NE")))
 NW <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NW")),
@@ -70,7 +65,11 @@ SW <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SW")),
 SE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "SE")),
         nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "SE")))
 adulthood <- c('Breeding', 'Non_breeding')
+# table of quadrant, count, and percent of adulthood per region
 count <- tibble(adulthood,NE,NW,SW,SE)
+library(plyr) # needed only for ddply
+count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
+unloadNamespace("plyr") # unloading because it messes up the rest of the code
 
 knitr::kable(tibble(adulthood,NE,NW,SW,SE),
       align = 'ccc', table.attr = "class=\"table\"", 
@@ -78,22 +77,18 @@ knitr::kable(tibble(adulthood,NE,NW,SW,SE),
 
 count <- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
-
+# ==== plot of count per quadrant, might be NOT NECESSARY  ==========
 ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="Number of fish by sea quadrant",x="quadrant")
-rm(adulthood, NE,NW,SE,SW,count)
-
-#count$adulthood <- as.numeric(as.character(yyz$b))
-count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
-#count <- count %>% mutate(percent = count/total)
-
+#================================================================
 
 ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
-  labs(title="Number of fish by sea quadrant",x="quadrant")
+  labs(title="percent of adult and young fish per quadrant",subtitle = "(total in each quadrant is 100%)",
+       x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
 
 # C)
@@ -143,17 +138,6 @@ q2 = sample_n(q2 ,50)
 #combines temp dataframes, removes temp dataframes
 fish_tbl = rbind(q1, q2)
 rm(q1, q2)
-
-
-#Paired t test
-area1 <- subset(q1,  quadrant == "NW", fish_length,
-                drop = TRUE)
-area2 <- subset(q2,  quadrant == "SE", fish_length,
-                drop = TRUE)
-#calculates the result and saves as dataframe
-result <- t.test(area1, area2, paired = TRUE)
-#result$statistic
-
 
 
 # F
