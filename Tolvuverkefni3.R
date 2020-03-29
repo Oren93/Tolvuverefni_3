@@ -145,6 +145,17 @@ fish_tbl = rbind(q1, q2)
 rm(q1, q2)
 
 
+#Paired t test
+area1 <- subset(q1,  quadrant == "NW", fish_length,
+                drop = TRUE)
+area2 <- subset(q2,  quadrant == "SE", fish_length,
+                drop = TRUE)
+#calculates the result and saves as dataframe
+result <- t.test(area1, area2, paired = TRUE)
+#result$statistic
+
+
+
 # F
 library(reshape2)
 oo_long = melt(oo, id.vars='quadrant', measure.vars='fish_length', value.name='fish_length')
