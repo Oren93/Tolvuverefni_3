@@ -95,7 +95,7 @@ rm(adulthood, NE,NW,SE,SW,count)
 C_Vector <- c(nrow(oo),mean(oo$fish_length), mean(oo$fish_mass))
 age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
 sd(age_ordered$length)
-
+# here I update the table with sd of length per age but don't do anything with the result
 sd_by_age <- c()
 age <- c()
 for (i in 1: max(age_ordered$age)) {
@@ -106,16 +106,15 @@ for (i in 1: max(age_ordered$age)) {
 rm(x,i)
 
 library(plyr) # needed only for ddply
-count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
+age_ordered <- ddply(age_ordered,.(age),transform,length_mean = mean(length))
 unloadNamespace("plyr") # unloading because it messes up the rest of the code
 
-age_ordered <- ddply(age_ordered,.(age),transform,length.New = mean(length))
 ggplot(age_ordered, aes(x = age, y = length))+
-  geom_point(data = age_ordered, aes( y = length.New), size = 4, 
+  geom_point(data = age_ordered, aes( y = length_mean), size = 4, 
            shape = 21, fill = "red")+
   geom_smooth(method = "loess") 
 
-ggplot(plot.data, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
+ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
 
 
