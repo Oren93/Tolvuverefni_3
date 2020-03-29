@@ -77,18 +77,20 @@ knitr::kable(tibble(adulthood,NE,NW,SW,SE),
       align = 'ccc', table.attr = "class=\"table\"", 
       format = "html")
 
-# ==== plot of count per quadrant, might be NOT NECESSARY  ==========
+
+#percent of fish of breeding age by quadrant
+ggplot(fish_count, aes(fill=adulthood, y=percent, x=area)) + 
+  geom_bar(position="dodge", stat="identity") +
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  labs(title="Percent of adult and young fish per quadrant",subtitle = "(total in each quadrant is 100%)",
+       x="quadrant")
+
+#amount of fish of breeding age by quadrant
 ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="Number of fish by sea quadrant",x="quadrant")
-#================================================================
 
-ggplot(fish_count, aes(fill=adulthood, y=percent, x=area)) + 
-  geom_bar(position="dodge", stat="identity") +
-  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
-  labs(title="percent of adult and young fish per quadrant",subtitle = "(total in each quadrant is 100%)",
-       x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
 
 # C)
@@ -142,6 +144,14 @@ q2 = sample_n(q2 ,50)
 fish_tbl = rbind(q1, q2)
 rm(q1, q2)
 
+
+area1 = subset(q1,  quadrant == "NW", fish_length,
+                 drop = TRUE)
+area2 = subset(q2,  quadrant == "SE", fish_length,
+                drop = TRUE)
+
+result = t.test(area1, area2, paired = TRUE)
+result
 
 # F
 library(reshape2)
