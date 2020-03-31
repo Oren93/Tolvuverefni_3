@@ -146,13 +146,12 @@ set.seed(0601)
 q2 = sample_n(q2 ,50)
 
 #combines temp dataframes, removes temp dataframes
-fish_tbl = rbind(q1, q2)
-rm(q1, q2)
+#fish_tbl = rbind(q1, q2)
 
 #c)
-area1 = subset(q1,  quadrant == "NW", fish_length,
+area1 = subset(q1,  quadrant == q1$quadrant[25], fish_length,
                  drop = TRUE)
-area2 = subset(q2,  quadrant == "SE", fish_length,
+area2 = subset(q2,  quadrant == q2$quadrant[25], fish_length,
                 drop = TRUE)
 
 result = t.test(area1, area2, paired = TRUE)
