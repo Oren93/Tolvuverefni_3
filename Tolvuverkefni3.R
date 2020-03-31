@@ -94,27 +94,31 @@ ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) +
 rm(adulthood, NE,NW,SE,SW,count)
 
 # C)
-C_Vector <- c(nrow(oo),mean(oo$fish_length), mean(oo$fish_mass))
-age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
+# I think we need to print that value:
 sd(age_ordered$length)
-# here I update the table with sd of length per age but don't do anything with the result
+
+# creating empty vectors to be fed in a loop
+count_by_age <- c()
+AvgW_by_age <- c()
+AvgL_by_age <- c()
 sd_by_age <- c()
 age <- c()
 for (i in 1: max(age_ordered$age)) {
-  x <- filter(age_ordered, age == i)
-  sd_by_age <- append(sd_by_age, sd(x$length))
-  age <- append(age, nrow(x))
+  count_by_age <- append(count_by_age, nrow(filter(age_ordered, age == i)))
+  AvgW_by_age <- append(AvgW_by_age, mean(filter(age_ordered, age == i)$weight))
+  AvgL_by_age <- append(AvgL_by_age, mean(filter(age_ordered, age == i)$length))
+  sd_by_age <- append(sd_by_age, sd(filter(age_ordered, age == i)$length))
+  age <- append(age, i)
 }
-rm(x,i)
-
-library(plyr) # needed only for ddply
-age_ordered <- ddply(age_ordered,.(age),transform,length_mean = mean(length))
-unloadNamespace("plyr") # unloading because it messes up the rest of the code
+fish_by_age <- tibble(age,
+  count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
+rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
 ggplot(age_ordered, aes(x = age, y = length))+
-  geom_point(data = age_ordered, aes( y = length_mean), size = 4, 
+  geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
            shape = 21, fill = "red")+
   geom_smooth(method = "loess") 
+
 
 ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
