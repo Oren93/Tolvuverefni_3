@@ -113,7 +113,7 @@ knitr::kable(tibble(adulthood,NE,NW,SW,SE),
 
 
 This plot shows the percentage of breeding and non breeding fish in each area. It is clear that here are large differences between quadrants. The northern quadrants have considerably more breeding fish than the southern quadrants.
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 count <- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
 
@@ -171,7 +171,6 @@ set.seed(0601)
 q1 = sample_n(q1 ,50)
 set.seed(0601)
 q2 = sample_n(q2 ,50)
-
 ```
 
 The assignment calls for a combined table of the two dataframes but we can just as well use the two different frames. However a combined table can be created with the following code.
@@ -181,13 +180,19 @@ fish_tbl = rbind(q1, q2)
 ```
 
 ## e)
-
+To test if there is a statistically significant difference between the means of the two areas we can use a paired t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01. The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code. 
 
 ```{r}
+#defines vectors of 
+area1 = subset(q1,  quadrant == q1$quadrant[25], fish_length,
+                 drop = TRUE)
+area2 = subset(q2,  quadrant == q2$quadrant[25], fish_length,
+                drop = TRUE)
 
+result = t.test(area1, area2, paired = TRUE)
 ```
 
-
+We find that the t value or the result is `r result$statistic` and the p-value is `r result$p.value`. Which means we can say, with confidence that $H_0$ is rejected since the the t value is in the range of $H_1$. The p value also supports this result as `r result$p.value` is considerably smaller than the generally accepted 0.05 threshold.
 
 ## x)
 

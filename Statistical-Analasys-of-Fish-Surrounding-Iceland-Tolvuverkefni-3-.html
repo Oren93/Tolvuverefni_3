@@ -512,25 +512,8 @@ Non_breeding
 <pre class="r"><code>count &lt;- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
 
-library(plyr) # needed only for ddply</code></pre>
-<pre><code>## ------------------------------------------------------------------------------</code></pre>
-<pre><code>## You have loaded plyr after dplyr - this is likely to cause problems.
-## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-## library(plyr); library(dplyr)</code></pre>
-<pre><code>## ------------------------------------------------------------------------------</code></pre>
-<pre><code>## 
-## Attaching package: &#39;plyr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:lubridate&#39;:
-## 
-##     here</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     compact</code></pre>
-<pre class="r"><code>count &lt;- ddply(count,.(area),transform,percent = 100*count/sum(count))
+library(plyr) # needed only for ddply
+count &lt;- ddply(count,.(area),transform,percent = 100*count/sum(count))
 unloadNamespace(&quot;plyr&quot;) # unloading because everything else breaks while it&#39;s loaded.
 
 #percent of fish of breeding age by quadrant
@@ -577,6 +560,15 @@ q2 = sample_n(q2 ,50)</code></pre>
 </div>
 <div id="e" class="section level2">
 <h2>e)</h2>
+<p>To test if there is a statistically significant difference between the means of the two areas we can use a paired t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of <span class="math inline">\(\pm\)</span> 2.01. The sample size is 50 which means the degrees of freedom is 49. The null hypothesis <span class="math inline">\(H_0\)</span> is true if the t value is in the interval -2.01 &lt; x &lt; 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The alternative hypotheiss <span class="math inline">\(H_1\)</span> is true if the t value is in the interal x &lt; -2.01 <span class="math inline">\(\cup\)</span> 2.01 &lt; x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code.</p>
+<pre class="r"><code>#defines vectors of 
+area1 = subset(q1,  quadrant == q1$quadrant[25], fish_length,
+                 drop = TRUE)
+area2 = subset(q2,  quadrant == q2$quadrant[25], fish_length,
+                drop = TRUE)
+
+result = t.test(area1, area2, paired = TRUE)</code></pre>
+<p>We find that the t value or the result is -4.1761668 and the p-value is 1.213144810^{-4}. Which means we can say, with confidence that <span class="math inline">\(H_0\)</span> is rejected since the the t value is in the range of <span class="math inline">\(H_1\)</span>. The p value also supports this result as <code>rresult$p.value</code> is considerably smaller than the generally accepted 0.05 threshold.</p>
 </div>
 <div id="x" class="section level2">
 <h2>x)</h2>
