@@ -71,7 +71,9 @@ fish_count <- gather(fish_count,key=area, value=count,
                 c(NE,NW,SW,SE))
 library(plyr) # needed only for ddply
 fish_count <- ddply(fish_count,.(area),transform,percent = 100*count/sum(count))
-unloadNamespace("plyr") # unloading because it messes up the rest of the code
+unloadNamespace("plyr") # # unloading because everything else breaks while it's loaded.
+
+
 
 knitr::kable(tibble(adulthood,NE,NW,SW,SE),
       align = 'ccc', table.attr = "class=\"table\"", 
@@ -91,7 +93,7 @@ ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
   labs(title="Number of fish by sea quadrant",x="quadrant")
 
-rm(adulthood, NE,NW,SE,SW,count)
+rm(adulthood, NE,NW,SE,SW,fish_count)
 
 # C)
 C_Vector <- c(nrow(oo),mean(oo$fish_length), mean(oo$fish_mass))
@@ -144,14 +146,14 @@ q2 = sample_n(q2 ,50)
 fish_tbl = rbind(q1, q2)
 rm(q1, q2)
 
-
+#c)
 area1 = subset(q1,  quadrant == "NW", fish_length,
                  drop = TRUE)
 area2 = subset(q2,  quadrant == "SE", fish_length,
                 drop = TRUE)
 
 result = t.test(area1, area2, paired = TRUE)
-result
+
 
 # F
 library(reshape2)

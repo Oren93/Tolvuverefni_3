@@ -112,13 +112,14 @@ knitr::kable(tibble(adulthood,NE,NW,SW,SE),
 ```
 
 
-```{r}
+This plot shows the percentage of breeding and non breeding fish in each area. It is clear that here are large differences between quadrants. The northern quadrants have considerably more breeding fish than the southern quadrants.
+```{r, warning=FALSE}
 count <- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
 
-library(plyr)
+library(plyr) # needed only for ddply
 count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
-unloadNamespace("plyr")
+unloadNamespace("plyr") # unloading because everything else breaks while it's loaded.
 
 #percent of fish of breeding age by quadrant
 ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
@@ -127,7 +128,7 @@ ggplot(count, aes(fill=adulthood, y=percent, x=area)) +
   labs(title="Percentage of fish by sea quadrant",x="quadrant")
 ```
 
-
+Here we have the amount of breeding and non breeding fish from each area. Note that the total fish from a given area doesn't mean anything other than that Hafransóknarstofnun caught fewer fish there. The data does not specify how many trawls were pulled from each area so the fish density cannot be inferred.
 ```{r}
 #amount of fish of breeding age by quadrant
 ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
@@ -137,6 +138,10 @@ ggplot(count, aes(fill=adulthood, y=count, x=area)) +
 rm(adulthood, NE,NW,SE,SW,count)
 ```
 
+Based off this data it can however be seen that the mean age of the fish population is substantially larger where there are more breeding fish.
+
+## c)
+
 
 ```{r}
 
@@ -146,16 +151,63 @@ rm(adulthood, NE,NW,SE,SW,count)
 
 ```
 
+## d)
+Now we create two dataframes with a sample of 50 fish from two random quadrants.
+```{r}
+#Creates a dataframe with 100 random fish from two random quadrants
+#temp column
+oo <- oo %>% mutate(quadrant_num = recode_factor
+                    (quadrant, "NE"="1", "NW"="2",
+                      "SW"="3", "SE"="4"))
+
+#creates temp dataframe with random quadrants
+set.seed(0601)
+q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
+set.seed(0601)
+q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
+
+#takes 50 random values from the temp dataframes
+set.seed(0601)
+q1 = sample_n(q1 ,50)
+set.seed(0601)
+q2 = sample_n(q2 ,50)
+
+```
+
+The assignment calls for a combined table of the two dataframes but we can just as well use the two different frames. However a combined table can be created with the following code.
+
+```{r, eval=FALSE}
+fish_tbl = rbind(q1, q2)
+```
+
+## e)
+
+
 ```{r}
 
 ```
 
+
+
+## x)
+
+
 ```{r}
 
 ```
 
+
+## x)
+
+
 ```{r}
 
 ```
 
 
+## x)
+
+
+```{r}
+
+```
