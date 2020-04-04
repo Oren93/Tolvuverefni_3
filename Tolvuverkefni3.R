@@ -97,7 +97,8 @@ ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) +
 rm(adulthood, NE,NW,SE,SW,fish_count)
 
 # C)
-age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
+age_ordered <- tibble(length = oo$fish_length,weight = oo$fish_mass,
+                      age = oo$fish_age)[order(oo$fish_age),]
 # I think we need to print that value:
 sd(age_ordered$length)
 
@@ -116,7 +117,6 @@ for (i in 1: max(age_ordered$age)) {
 }
 fish_by_age <- tibble(age,
   count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
-rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
 ggplot(age_ordered, aes(x = age, y = length))+
   geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
@@ -127,6 +127,7 @@ ggplot(age_ordered, aes(x = age, y = length))+
 ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
 
+rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
 # d)
 #Creates a dataframe with 100 random fish from two random quadrants
@@ -143,17 +144,18 @@ q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
 
 #takes 50 random values from the temp dataframes
 set.seed(0601)
-q1 = sample_n(q1 ,50)
+qu1 = sample_n(q1 ,50)
 set.seed(0601)
-q2 = sample_n(q2 ,50)
+qu2 = sample_n(q2 ,50)
 
 #combines temp dataframes, removes temp dataframes
 #fish_tbl = rbind(q1, q2)
 
 # e)
-area1 = subset(q1,  quadrant == q1$quadrant[25], fish_length,
+
+area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
                  drop = TRUE)
-area2 = subset(q2,  quadrant == q2$quadrant[25], fish_length,
+area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
                 drop = TRUE)
 
 result = t.test(area1, area2, paired = TRUE)
@@ -171,42 +173,51 @@ get_normal_density <- function(x, binwidth) {
     normal_curve = dnorm(grid, mean(x), sd(x)) * length(x) * binwidth
   )
 }
-
-# Skilgreinum breytu fyrir binwidth
-BW <- 3
-
 # Buum til normaldreifd gogn fyrir hvert hafsvaedi med thvi ad
 #   beita fallinu "get_normal_density" a lengdarmaelingar sem tilheyra
 #   hverju hafsvaedi fyrir sig
 normaldens <-
   oo %>%
   group_by(quadrant) %>%
-  do(get_normal_density(x=.$fish_length, binwidth=BW))
+  do(get_normal_density(x=.$fish_length, binwidth=3))
 
-ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=BW)+
+ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=3)+
   geom_line(data=normaldens,mapping=aes(x=fish_length,y=normal_curve),col="red",size=1)+
   facet_wrap(~quadrant)+
   labs(x="length")
 
 rm(age,BW,get_normal_density,C_Vector,sd_by_age,oo_long,normaldens,age_ordered)
-#-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-# the following 2 plot are not to be used
 
-ggplot(oo, aes( x=fish_length)) + 
-  geom_histogram()+xlab("Price (thousands - ISK)")+ylab("Frequency - Number of properties")+
-  labs(title="Length of fish by age",x="length",y="count")+
-  geom_line(stat="count", col = "red")+
-  #geom_line(data = oo, aes(x = fish_length, y = n), col = "red")
-  theme_linedraw()
+# g lið
+#takes 50 random values from the temp dataframes
+set.seed(0601)
+qu1 = sample_n(q1 ,50)
+set.seed(0601)
+qu2 = sample_n(q2 ,50)
 
-  ggplot(oo, aes(fish_length)) +
-    geom_histogram(stat="count", position = "dodge") + 
-    geom_line(stat="count", col = "red")+
-    scale_fill_brewer(palette = "Set1")+
-    theme_linedraw()
-#-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
+               drop = TRUE)
+area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
+               drop = TRUE)
 
-  
+result = t.test(area1, area2, paired = TRUE)
+
+
+
+#   t.test(z[sample(1:length(z))]~xyind)$statistic
+
+rm(tNE,tNW,tSW,tSE)  
+# ????????????????????????????????????????????????????????????????????????????????
+do.one <- function(n1, n2, mu1, mu2, s1, s2, alpha){
+  y1 <- rnorm(n1, mu1, s1)
+  y2 <- rnorm(n2, mu2, s2)
+  t.test(y1, y2)$p.value < alpha # default is unequal variance
+}
+set.seed(4)
+bigB <- 10000
+mean(replicate(bigB, do.one(20, 20, 0, 0.7, 1, 1.5, 0.05)))
+
+    
 #################################################################
 # Bonus attempt
   # need to sort out and remove useless libraries
