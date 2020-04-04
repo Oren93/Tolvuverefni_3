@@ -142,10 +142,12 @@ Based off this data it can however be seen that the mean age of the fish populat
 
 ## c)
 
+Now we create a table showing various properties of fish based on their age. Note that there were no fish in the data that were 12 year old and only one of each age group above 12. As such the standard deviation of length cannot be calculated in these cases. Also other age groups, in particular 1 and 11 only have a few fish in it. Not really enough to be confident in the standard deviation value. Other than those quirks the data is as one might expect. The average length and weight increase consistently with age until the population starts dying off.
 
 
 ```{r}
-age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
+age_ordered <- tibble(length = oo$fish_length,weight = oo$fish_mass,
+                      age = oo$fish_age)[order(oo$fish_age),]
 # I think we need to print that value:
 sd(age_ordered$length)
 
@@ -165,14 +167,14 @@ for (i in 1: max(age_ordered$age)) {
 fish_by_age <- tibble(age,
   count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
 
-knitr::kable(tibble(age, count, avg_Weight, Avg_length, sd_len),
+knitr::kable(fish_by_age,
       align = 'ccc', table.attr = "class=\"table\"", 
       format = "html")
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(age_ordered, aes(x = age, y = length))+
   geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
            shape = 21, fill = "red")+
@@ -181,7 +183,7 @@ ggplot(age_ordered, aes(x = age, y = length))+
 
 ```{r}
 ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
-  theme_linedraw() + labs(title="Length of fish by age")
+  theme_linedraw() + labs(title="Average Length of Fish by Age")
 ```
 
 
