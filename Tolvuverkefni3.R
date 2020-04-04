@@ -170,42 +170,44 @@ get_normal_density <- function(x, binwidth) {
     normal_curve = dnorm(grid, mean(x), sd(x)) * length(x) * binwidth
   )
 }
-
-# Skilgreinum breytu fyrir binwidth
-BW <- 3
-
 # Buum til normaldreifd gogn fyrir hvert hafsvaedi med thvi ad
 #   beita fallinu "get_normal_density" a lengdarmaelingar sem tilheyra
 #   hverju hafsvaedi fyrir sig
 normaldens <-
   oo %>%
   group_by(quadrant) %>%
-  do(get_normal_density(x=.$fish_length, binwidth=BW))
+  do(get_normal_density(x=.$fish_length, binwidth=3))
 
-ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=BW)+
+ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=3)+
   geom_line(data=normaldens,mapping=aes(x=fish_length,y=normal_curve),col="red",size=1)+
   facet_wrap(~quadrant)+
   labs(x="length")
 
 rm(age,BW,get_normal_density,C_Vector,sd_by_age,oo_long,normaldens,age_ordered)
-#-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-# the following 2 plot are not to be used
 
-ggplot(oo, aes( x=fish_length)) + 
-  geom_histogram()+xlab("Price (thousands - ISK)")+ylab("Frequency - Number of properties")+
-  labs(title="Length of fish by age",x="length",y="count")+
-  geom_line(stat="count", col = "red")+
-  #geom_line(data = oo, aes(x = fish_length, y = n), col = "red")
-  theme_linedraw()
+# g lið
+tNE <- sd(filter(oo, quadrant == "NE")$fish_length)
+tNW <- sd(filter(oo, quadrant == "NW")$fish_length)
+tSW <- sd(filter(oo, quadrant == "SW")$fish_length)
+tSE <- sd(filter(oo, quadrant == "SE")$fish_length)
+tNE/tNW
+tSW/tNE
+1-tNE/tSE
 
-  ggplot(oo, aes(fish_length)) +
-    geom_histogram(stat="count", position = "dodge") + 
-    geom_line(stat="count", col = "red")+
-    scale_fill_brewer(palette = "Set1")+
-    theme_linedraw()
-#-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+#   t.test(z[sample(1:length(z))]~xyind)$statistic
 
-  
+rm(tNE,tNW,tSW,tSE)  
+# ????????????????????????????????????????????????????????????????????????????????
+do.one <- function(n1, n2, mu1, mu2, s1, s2, alpha){
+  y1 <- rnorm(n1, mu1, s1)
+  y2 <- rnorm(n2, mu2, s2)
+  t.test(y1, y2)$p.value < alpha # default is unequal variance
+}
+set.seed(4)
+bigB <- 10000
+mean(replicate(bigB, do.one(20, 20, 0, 0.7, 1, 1.5, 0.05)))
+
+    
 #################################################################
 # Bonus attempt
   # need to sort out and remove useless libraries
