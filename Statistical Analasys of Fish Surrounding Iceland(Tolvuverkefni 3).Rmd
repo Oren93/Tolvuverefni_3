@@ -143,13 +143,47 @@ Based off this data it can however be seen that the mean age of the fish populat
 ## c)
 
 
-```{r}
 
+```{r}
+age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
+# I think we need to print that value:
+sd(age_ordered$length)
+
+# creating empty vectors to be fed in a loop
+count_by_age <- c()
+AvgW_by_age <- c()
+AvgL_by_age <- c()
+sd_by_age <- c()
+age <- c()
+for (i in 1: max(age_ordered$age)) {
+  count_by_age <- append(count_by_age, nrow(filter(age_ordered, age == i)))
+  AvgW_by_age <- append(AvgW_by_age, mean(filter(age_ordered, age == i)$weight))
+  AvgL_by_age <- append(AvgL_by_age, mean(filter(age_ordered, age == i)$length))
+  sd_by_age <- append(sd_by_age, sd(filter(age_ordered, age == i)$length))
+  age <- append(age, i)
+}
+fish_by_age <- tibble(age,
+  count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
+
+knitr::kable(tibble(age, count, avg_Weight, Avg_length, sd_len),
+      align = 'ccc', table.attr = "class=\"table\"", 
+      format = "html")
+
+rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 ```
 
 ```{r}
-
+ggplot(age_ordered, aes(x = age, y = length))+
+  geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
+           shape = 21, fill = "red")+
+  geom_smooth(method = "loess") 
 ```
+
+```{r}
+ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
+  theme_linedraw() + labs(title="Length of fish by age")
+```
+
 
 ## d)
 Now we create two dataframes with a sample of 50 fish from two random quadrants.
@@ -194,7 +228,7 @@ result = t.test(area1, area2, paired = TRUE)
 
 We find that the t value or the result is `r result$statistic` and the p-value is `r result$p.value`. Which means we can say, with confidence that $H_0$ is rejected since the the t value is in the range of $H_1$. The p value also supports this result as `r result$p.value` is considerably smaller than the generally accepted 0.05 threshold.
 
-## x)
+## f)
 
 
 ```{r}
