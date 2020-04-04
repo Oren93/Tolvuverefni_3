@@ -97,6 +97,7 @@ ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) +
 rm(adulthood, NE,NW,SE,SW,fish_count)
 
 # C)
+age_ordered <- tibble(length = oo$fish_length,age = oo$fish_age)[order(oo$fish_age),]
 # I think we need to print that value:
 sd(age_ordered$length)
 
