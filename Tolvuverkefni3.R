@@ -150,7 +150,7 @@ q2 = sample_n(q2 ,50)
 #combines temp dataframes, removes temp dataframes
 #fish_tbl = rbind(q1, q2)
 
-#c)
+# e)
 area1 = subset(q1,  quadrant == q1$quadrant[25], fish_length,
                  drop = TRUE)
 area2 = subset(q2,  quadrant == q2$quadrant[25], fish_length,
