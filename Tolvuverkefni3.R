@@ -1,3 +1,4 @@
+#setwd("C:/Users/Óðinn/Desktop/R Working dir")
 library(tidyverse)
 library(readr)
 library(dplyr)
