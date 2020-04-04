@@ -142,6 +142,7 @@ Based off this data it can however be seen that the mean age of the fish populat
 
 ## c)
 
+Now we create a table showing various properties of fish based on their age. Note that there were no fish in the data that were 12 year old and only one of each age group above 12. As such the standard deviation of length cannot be calculated in these cases. Also other age groups, in particular 1 and 11 only have a few fish in it. Not really enough to be confident in the standard deviation value. Other than those quirks the data is as one might expect. The average length and weight increase consistently with age until the population starts dying off.
 
 
 ```{r}
