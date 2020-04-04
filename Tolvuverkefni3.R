@@ -152,6 +152,7 @@ qu2 = sample_n(q2 ,50)
 #fish_tbl = rbind(q1, q2)
 
 # e)
+
 area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
                  drop = TRUE)
 area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
