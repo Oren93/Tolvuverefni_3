@@ -1,4 +1,3 @@
-#setwd("C:/Users/Óðinn/Desktop/R Working dir")
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -97,6 +96,7 @@ ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) +
 rm(adulthood, NE,NW,SE,SW,fish_count)
 
 # C)
+# better to have it ordered for code later to run faster
 age_ordered <- tibble(length = oo$fish_length,weight = oo$fish_mass,
                       age = oo$fish_age)[order(oo$fish_age),]
 # I think we need to print that value:
@@ -123,8 +123,7 @@ ggplot(age_ordered, aes(x = age, y = length))+
            shape = 21, fill = "red")+
   geom_smooth(method = "loess") 
 
-
-ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
+ggplot(fish_by_age, aes(x=age,y=Avg_length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
@@ -160,6 +159,9 @@ area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
 
 result = t.test(area1, area2, paired = TRUE)
 
+combineLength <- c(q1,q2)$fish_length # to be used later
+result <- abs(result$statistic)
+rm(q1,q2,qu1,qu2,area1,area2) # neccessary data kept, anything else removed 
 
 # F
 library(reshape2)
@@ -186,39 +188,35 @@ ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=3)+
   facet_wrap(~quadrant)+
   labs(x="length")
 
-rm(age,BW,get_normal_density,C_Vector,sd_by_age,oo_long,normaldens,age_ordered)
+rm(get_normal_density,oo_long,normaldens)
 
-# g lið
-#takes 50 random values from the temp dataframes
+
+# g lið is Ready
 set.seed(0601)
-qu1 = sample_n(q1 ,50)
-set.seed(0601)
-qu2 = sample_n(q2 ,50)
-
-area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
-               drop = TRUE)
-area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
-               drop = TRUE)
-
-result = t.test(area1, area2, paired = TRUE)
-
-
-
-#   t.test(z[sample(1:length(z))]~xyind)$statistic
-
-rm(tNE,tNW,tSW,tSE)  
-# ????????????????????????????????????????????????????????????????????????????????
-do.one <- function(n1, n2, mu1, mu2, s1, s2, alpha){
-  y1 <- rnorm(n1, mu1, s1)
-  y2 <- rnorm(n2, mu2, s2)
-  t.test(y1, y2)$p.value < alpha # default is unequal variance
+tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
+                                sample(combineLength, 50),
+                                paired = TRUE)$statistic,
+                                simplify = TRUE )
+a <- c()
+for (i in 1:length(tTest)){
+  if (abs(tTest[i]) > abs(result$statistic))
+    a[i] <- 1
+  else
+    a[i] <- 0
 }
-set.seed(4)
-bigB <- 10000
-mean(replicate(bigB, do.one(20, 20, 0, 0.7, 1, 1.5, 0.05)))
-
-    
-#################################################################
+a <- sum(a) 
+## Teacher's approach, probably better to use, NOTE: result is different
+xyind <-c(rep(1,50),rep(2,50))
+Repl <- 5000
+set.seed(0601)
+tTest <- sum(
+  replicate(
+    Repl,
+    result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
+  )
+)/Repl*100
+rm(Repl,result,tTest,xyind,combineLength, a ,i )
+#¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 # Bonus attempt
   # need to sort out and remove useless libraries
 #library(tidyverse)
@@ -278,3 +276,5 @@ ggplot(data = world) +
   geom_sf(data = sites, size = 4, shape = 23, fill = "red") +
   ggtitle("Fish around Iceland", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)
+
+rm(reitir, x, y, world, sites)
