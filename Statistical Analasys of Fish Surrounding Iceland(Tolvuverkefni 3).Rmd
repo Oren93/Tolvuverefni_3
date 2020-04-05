@@ -244,7 +244,7 @@ We find that the t value or the result is `r result$statistic` and the p-value i
 ```
 
 
-## x)
+## g)
 
 
 ```{r}
@@ -252,7 +252,31 @@ We find that the t value or the result is `r result$statistic` and the p-value i
 ```
 
 
-## x)
+## h)
+
+
+```{r}
+
+```
+
+
+## h)
+
+
+```{r}
+
+```
+
+
+## h)
+
+
+```{r}
+
+```
+
+
+## h)
 
 
 ```{r}

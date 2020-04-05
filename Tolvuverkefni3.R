@@ -219,7 +219,24 @@ tTest <- sum(
   )
 )/Repl*100
 rm(Repl,result,tTest,xyind,combineLength, a ,i )
+
+
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+#h)
+
+
+
+
+
+#¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+#i)
+
+
+
+
+
+#¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+
 # Bonus attempt
   # need to sort out and remove useless libraries
 #library(tidyverse)
@@ -281,3 +298,6 @@ ggplot(data = world) +
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)
 
 rm(reitir, x, y, world, sites)
+
+
+
