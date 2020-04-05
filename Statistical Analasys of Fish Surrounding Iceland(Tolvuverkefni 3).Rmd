@@ -148,8 +148,6 @@ Now we create a table showing various properties of fish based on their age. Not
 ```{r}
 age_ordered <- tibble(length = oo$fish_length,weight = oo$fish_mass,
                       age = oo$fish_age)[order(oo$fish_age),]
-# I think we need to print that value:
-sd(age_ordered$length)
 
 # creating empty vectors to be fed in a loop
 count_by_age <- c()
@@ -164,6 +162,7 @@ for (i in 1: max(age_ordered$age)) {
   sd_by_age <- append(sd_by_age, sd(filter(age_ordered, age == i)$length))
   age <- append(age, i)
 }
+# creating table
 fish_by_age <- tibble(age,
   count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
 
@@ -174,6 +173,8 @@ knitr::kable(fish_by_age,
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 ```
 
+Now let's create two enterpetations of the same data. First we plot fish length by age as a continuous variable and then as a discrete variable.
+
 ```{r, message=FALSE, warning=FALSE}
 ggplot(age_ordered, aes(x = age, y = length))+
   geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
@@ -181,11 +182,16 @@ ggplot(age_ordered, aes(x = age, y = length))+
   geom_smooth(method = "loess") 
 ```
 
+The red dots represent the average for a given age.
+
 ```{r}
-ggplot(age_ordered, aes(x=age,y=length)) + geom_bar(position="dodge", stat="identity")+
-  theme_linedraw() + labs(title="Average Length of Fish by Age")
+ggplot(oo, aes(group=fish_age,y=fish_length)) +
+  geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
+
+rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 ```
 
+One of the primary advantages to using the continuous plot is that it is tribial to estmate age or length of a fish from the same population if you know one or the other. Both do suffere from the shortcomings of the data itself but the continuous plot does try to interpolate the mean of the older fish based off the previous data however the accuracy of this estimate is questionable.
 
 ## d)
 Now we create two dataframes with a sample of 50 fish from two random quadrants.
