@@ -126,6 +126,10 @@ ggplot(age_ordered, aes(x = age, y = length))+
 ggplot(fish_by_age, aes(x=age,y=Avg_length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
 
+ggplot(oo, aes(group=fish_age,y=fish_length)) +
+#ggplot( ylab="temp",aes(x=season, y=avg_temp, col=station)) +
+  geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
+
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
 # d)
