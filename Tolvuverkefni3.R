@@ -137,12 +137,17 @@ rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 oo <- oo %>% mutate(quadrant_num = recode_factor
                     (quadrant, "NE"="1", "NW"="2",
                       "SW"="3", "SE"="4"))
-
 #creates temp dataframe with random quadrants
 set.seed(0601)
-q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
-set.seed(0601)
-q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
+samp <- sample(c("NE","NW","SW","SE"),2)
+q1 = filter(oo, quadrant == samp[1])
+q2 = filter(oo, quadrant == samp[2])
+
+#creates temp dataframe with random quadrants
+#set.seed(0601)
+#q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
+#set.seed(0601)
+#q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
 
 #takes 50 random values from the temp dataframes
 set.seed(0601)
@@ -150,8 +155,11 @@ qu1 = sample_n(q1 ,50)
 set.seed(0601)
 qu2 = sample_n(q2 ,50)
 
-#combines temp dataframes, removes temp dataframes
-#fish_tbl = rbind(q1, q2)
+# rand_frame will be used in part i below
+quadrant_i <- qu1
+if (sample(c(1,2),1)==1) 
+  quadrant_i <- qu2
+
 
 # e)
 
@@ -202,7 +210,7 @@ tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
                                 simplify = TRUE )
 a <- c()
 for (i in 1:length(tTest)){
-  if (abs(tTest[i]) > abs(result$statistic))
+  if (abs(tTest[i]) > result)
     a[i] <- 1
   else
     a[i] <- 0
@@ -227,13 +235,43 @@ rm(Repl,result,tTest,xyind,combineLength, a ,i )
 
 
 
-
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 #i)
+ggplot(quadrant_i, aes(x = fish_length, y = fish_mass/1000))+
+  geom_point(data = quadrant_i, aes( y = fish_mass/1000), size = 1, 
+             shape = 21, fill = "red")+
+  geom_smooth(method = "loess")  +
+  labs(x="length (cm)",y="Weight (Kg)",title="Fish weight by length")
 
+ggplot(quadrant_i, aes(x = log(fish_length), y = log(fish_mass)))+
+  geom_point(data = quadrant_i, aes( y = log(fish_mass)), size = 1, 
+             shape = 21, fill = "red")+
+  geom_smooth(method = "loess")  +
+  labs(x="ln(length, cm)",y="ln(weight, g)",title="Natural log of weight by length")
 
+formula <- lm(log(quadrant_i$fish_mass) ~ log(quadrant_i$fish_length))
+q <- tibble(x=log(quadrant_i$fish_length), y=log(quadrant_i$fish_mass))
+m <- formula$coefficients[2]
+a <- formula$coefficients[1]
+l <- quadrant_i$fish_length[25]
 
-
+# formula for predicting a fish weight:
+M.L <-function(l) # Mass as a function of length
+{
+  x <- log(l)
+  ln_mass <- a + m*x
+  exp(ln_mass)
+}
+# create a data frame of original fish length and calculated fish mass to compare to original fish mass
+len <- quadrant_i$fish_length
+calc_Mass<-M.L(len)
+compare <- tibble(x=len, y=calc_Mass)
+# plotting, expected to look similar to the first graph of part i
+ggplot(compare, aes(x = x, y = y/1000))+
+  geom_point(data = compare, aes( y = y/1000), size = 1, 
+             shape = 21, fill = "red")+
+  geom_smooth(method = "loess")  +
+  labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 
