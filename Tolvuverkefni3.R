@@ -122,12 +122,11 @@ ggplot(age_ordered, aes(x = age, y = length))+
   geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
            shape = 21, fill = "red")+
   geom_smooth(method = "loess") 
-
+# Histogram:
 ggplot(fish_by_age, aes(x=age,y=Avg_length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
-
+# Box plot:
 ggplot(oo, aes(group=fish_age,y=fish_length)) +
-#ggplot( ylab="temp",aes(x=season, y=avg_temp, col=station)) +
   geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
