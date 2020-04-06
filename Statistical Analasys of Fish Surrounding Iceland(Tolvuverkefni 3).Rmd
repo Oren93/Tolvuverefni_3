@@ -187,8 +187,6 @@ The red dots represent the average for a given age.
 ```{r}
 ggplot(oo, aes(group=fish_age,y=fish_length)) +
   geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
-
-rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 ```
 
 One of the primary advantages to using the continuous plot is that it is tribial to estmate age or length of a fish from the same population if you know one or the other. Both do suffere from the shortcomings of the data itself but the continuous plot does try to interpolate the mean of the older fish based off the previous data however the accuracy of this estimate is questionable.
@@ -222,7 +220,7 @@ fish_tbl = rbind(q1, q2)
 ```
 
 ## e)
-To test if there is a statistically significant difference between the means of the two areas we can use a paired t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01. The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code. 
+To test if there is a statistically significant difference between the means of the two areas we can use an independent t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01 (or $\pm$ 2.04 depending on who you ask(df = 30)). The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code. 
 
 ```{r}
 #defines vectors of 
@@ -240,7 +238,34 @@ We find that the t value or the result is `r result$statistic` and the p-value i
 
 
 ```{r}
+#loading needed library and defines long format dataframe needed
+library(reshape2)
+oo_long = melt(oo, id.vars='quadrant', measure.vars='fish_length', value.name='fish_length')
 
+#Function that takes vector and returns dataframe that contains the estimated normal #distribution of the vector
+
+get_normal_density <- function(x, binwidth) {
+  grid <- seq(min(x), max(x), length=100)
+  data.frame(fish_length = grid,
+    normal_curve = dnorm(grid, mean(x), sd(x)) * length(x) * binwidth
+  )
+}
+# Buum til normaldreifd gogn fyrir hvert hafsvaedi med thvi ad
+#   beita fallinu "get_normal_density" a lengdarmaelingar sem tilheyra
+#   hverju hafsvaedi fyrir sig
+
+# Creates normally distributed data for each quadrant 
+normaldens <-
+  oo %>%
+  group_by(quadrant) %>%
+  do(get_normal_density(x=.$fish_length, binwidth=3))
+
+ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=3)+
+  geom_line(data=normaldens,mapping=aes(x=fish_length,y=normal_curve),col="red",size=1)+
+  facet_wrap(~quadrant)+
+  labs(x="length", title="Distribution of Fish Length in Each Quadrant")
+
+rm(get_normal_density,oo_long,normaldens)
 ```
 
 

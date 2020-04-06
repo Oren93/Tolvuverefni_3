@@ -236,7 +236,13 @@ rm(Repl,result,tTest,xyind,combineLength, a ,i )
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 #h)
-
+ p1 = nrow(filter(oo, breeding_age == TRUE, quadrant == (qu1$quadrant[25])))/
+  nrow(filter(oo, quadrant == (qu1$quadrant[25])))
+ 
+ p2 = nrow(filter(oo, breeding_age == TRUE, quadrant == (qu2$quadrant[25])))/
+  nrow(filter(oo, quadrant == (qu2$quadrant[25])))
+ 
+res <- prop.test(x = p1*100, n = 50, p = p2, correct = FALSE)
 
 
 
