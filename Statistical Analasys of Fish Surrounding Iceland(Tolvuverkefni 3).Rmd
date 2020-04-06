@@ -397,12 +397,12 @@ ggplot(data = world) +
   geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
              shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
-  labs(x="Longitude", y="Latitude",title="Iceland",
-       subtitle = paste0("(", nrow(sites), " spots)"))+
+  labs(x="Longitude", y="Latitude",title="Iceland's fishing water",
+       subtitle = paste0("(", nrow(sites), " fishing spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
   geom_text(data=sites,aes(x=longitude,y=latitude,
           label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
-            hjust=0, vjust=0, size=3,angle=30,
+            hjust=0, vjust=0, size=3,angle=30, fontface="bold",
           colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
   ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")+
   theme(panel.background = element_rect(fill = "#1bb0b5",
