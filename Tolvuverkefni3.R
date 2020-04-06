@@ -126,23 +126,26 @@ ggplot(age_ordered, aes(x = age, y = length))+
 ggplot(fish_by_age, aes(x=age,y=Avg_length)) + geom_bar(position="dodge", stat="identity")+
   theme_linedraw() + labs(title="Length of fish by age")
 # Box plot:
-ggplot(oo, aes(group=fish_age,y=fish_length)) +
+ggplot(oo, aes(x=as.factor(fish_age),y=fish_length)) +
   geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
 # d)
 #Creates a dataframe with 100 random fish from two random quadrants
-#temp column
-oo <- oo %>% mutate(quadrant_num = recode_factor
-                    (quadrant, "NE"="1", "NW"="2",
-                      "SW"="3", "SE"="4"))
 #creates temp dataframe with random quadrants
 set.seed(0601)
 samp <- sample(c("NE","NW","SW","SE"),2)
 q1 = filter(oo, quadrant == samp[1])
 q2 = filter(oo, quadrant == samp[2])
+samp[1] # tp print which area q1 got
+samp[2] # same with q2
+rm(samp)
 
+#temp column
+#oo <- oo %>% mutate(quadrant_num = recode_factor
+#                    (quadrant, "NE"="1", "NW"="2",
+#                      "SW"="3", "SE"="4"))
 #creates temp dataframe with random quadrants
 #set.seed(0601)
 #q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
@@ -155,12 +158,14 @@ qu1 = sample_n(q1 ,50)
 set.seed(0601)
 qu2 = sample_n(q2 ,50)
 
-# rand_frame will be used in part i below
-quadrant_i <- qu1
-if (sample(c(1,2),1)==1) 
-  quadrant_i <- qu2
-
-
+# rand_quadrant_50 will be used in part i,j and k later
+rand_quadrant <- q1
+rand_quadrant_50 <- qu1
+set.seed(1009)
+if (sample(c(1,2),1)==1) {
+  rand_quadrant_50 <- qu2
+  rand_quadrant <- q2
+  }
 # e)
 
 area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
@@ -237,23 +242,25 @@ rm(Repl,result,tTest,xyind,combineLength, a ,i )
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 #i)
-ggplot(quadrant_i, aes(x = fish_length, y = fish_mass/1000))+
-  geom_point(data = quadrant_i, aes( y = fish_mass/1000), size = 1, 
+ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
+  geom_point(data = rand_quadrant_50, aes( y = fish_mass/1000), size = 1, 
              shape = 21, fill = "red")+
   geom_smooth(method = "loess")  +
-  labs(x="length (cm)",y="Weight (Kg)",title="Fish weight by length")
+  labs(x="length (cm)",y="Weight (Kg)",
+       title = paste0("Fish weight by length in the ",rand_quadrant_50$quadrant[1] , " area"))
 
-ggplot(quadrant_i, aes(x = log(fish_length), y = log(fish_mass)))+
-  geom_point(data = quadrant_i, aes( y = log(fish_mass)), size = 1, 
+ggplot(rand_quadrant_50, aes(x = log(fish_length), y = log(fish_mass)))+
+  geom_point(data = rand_quadrant_50, aes( y = log(fish_mass)), size = 1, 
              shape = 21, fill = "red")+
   geom_smooth(method = "loess")  +
-  labs(x="ln(length, cm)",y="ln(weight, g)",title="Natural log of weight by length")
+  labs(x="ln(length, cm)",y="ln(weight, g)",
+       title=paste0("Natural log of weight by length in the ",rand_quadrant_50$quadrant[1] , " area"))
 
-formula <- lm(log(quadrant_i$fish_mass) ~ log(quadrant_i$fish_length))
-q <- tibble(x=log(quadrant_i$fish_length), y=log(quadrant_i$fish_mass))
+formula <- lm(log(rand_quadrant_50$fish_mass) ~ log(rand_quadrant_50$fish_length))
+q <- tibble(x=log(rand_quadrant_50$fish_length), y=log(rand_quadrant_50$fish_mass))
 m <- formula$coefficients[2]
 a <- formula$coefficients[1]
-l <- quadrant_i$fish_length[25]
+l <- rand_quadrant_50$fish_length[25]
 
 # formula for predicting a fish weight:
 M.L <-function(l) # Mass as a function of length
@@ -262,17 +269,45 @@ M.L <-function(l) # Mass as a function of length
   ln_mass <- a + m*x
   exp(ln_mass)
 }
+#_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
+# j part (NOTE: I did not fully understand the instructions!)
 # create a data frame of original fish length and calculated fish mass to compare to original fish mass
-len <- quadrant_i$fish_length
+len <- rand_quadrant_50$fish_length
 calc_Mass<-M.L(len)
 compare <- tibble(x=len, y=calc_Mass)
 # plotting, expected to look similar to the first graph of part i
 ggplot(compare, aes(x = x, y = y/1000))+
-  geom_point(data = compare, aes( y = y/1000), size = 1, 
+  geom_point(data = compare, aes( y = y/1000), size = 1.5, 
              shape = 21, fill = "red")+
-  geom_smooth(method = "loess")  +
-  labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")
+  geom_smooth(method = "loess")  + theme_light()+
+  labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")+
+  stat_smooth(method='lm', se=FALSE)
 
+# plotting natural log of estimated weight as a function of ln(length)
+ggplot(compare, aes(x = log(x), y = log(y)))+
+  geom_point(data = compare, aes( y = log(y)), size = 1.5, 
+             shape = 21, fill = "red")+
+  geom_smooth(method = "loess")  + theme_light()+ # same line as the line the teacher wants us to use
+  labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")
+#  stat_smooth(method='lm', se=FALSE)
+
+#`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','
+# k part
+
+ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
+  geom_boxplot(fill = "#00e5ff", colour = "#1418ff") + labs(y="length", x="age",
+  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))+
+  theme( # just playing with colours
+    panel.background = element_rect(fill = "#ffb780",
+                                    colour = "lightblue",
+                                    size = 0.5, linetype = "solid"),
+    panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                    colour = "white"), 
+    panel.grid.minor = element_line(size = 0.25, linetype = 'dashed',
+                                    colour = "white")
+  )
+
+# /^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 
 # Bonus attempt
@@ -286,7 +321,7 @@ ggplot(compare, aes(x = x, y = y/1000))+
 #library(ggmap)
 #library(maps)
 library(sf)## for the different approach
-theme_set(theme_bw())
+theme_set(theme_dark())
 library("sf")
 #library("sp")
 library("rnaturalearth")##
@@ -315,15 +350,15 @@ sites <- data.frame(longitude=x, latitude = y)
 
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
-  geom_sf(color = "black", fill = "blue")+
-  geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
-             shape = 23, fill = "yellow") +
-  xlab("Longitude") + ylab("Latitude") +
-  ggtitle("World map", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))+
+  geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
+  geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
+             shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
+  labs(x="Longitude", y="Latitude",title="Iceland",
+       subtitle = paste0("(", nrow(sites), " spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-geom_text(data=sites,aes(x=longitude,y=latitude,label=
-                          paste0("(", x,",",y)),hjust=0, vjust=0)
-#geom_text(data=sites,aes(x=longitude,y=latitude,label=unique(oo$area)),hjust=0, vjust=0)
+  geom_text(data=sites,aes(x=longitude,y=latitude,label= paste0("(", abs(x),",",y,")")),
+          hjust=0, vjust=0, size=3,angle=30,
+          colour="yellow",nudge_y=-0.12,nudge_x=-0.7)
 
 #different approach
 sites <- st_as_sf(sites, coords = c("longitude", "latitude"), 
