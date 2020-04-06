@@ -208,30 +208,32 @@ rm(get_normal_density,oo_long,normaldens)
 
 
 # g lið is Ready
-set.seed(0601)
-tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
-                                sample(combineLength, 50),
-                                paired = TRUE)$statistic,
-                                simplify = TRUE )
-a <- c()
-for (i in 1:length(tTest)){
-  if (abs(tTest[i]) > result)
-    a[i] <- 1
-  else
-    a[i] <- 0
-}
-a <- sum(a) 
+
+#set.seed(0601)
+#tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
+#                                sample(combineLength, 50),
+#                                paired = TRUE)$statistic,
+#                                simplify = TRUE )
+#a <- c()
+#for (i in 1:length(tTest)){
+#  if (abs(tTest[i]) > result)
+#    a[i] <- 1
+#  else
+#    a[i] <- 0
+#}
+#a <- sum(a) 
+
 ## Teacher's approach, probably better to use, NOTE: result is different
 xyind <-c(rep(1,50),rep(2,50))
 Repl <- 5000
 set.seed(0601)
-tTest <- sum(
+p_value <- sum(
   replicate(
     Repl,
     result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
   )
-)/Repl*100
-rm(Repl,result,tTest,xyind,combineLength, a ,i )
+)/Repl
+rm(Repl,result,p_value,xyind,combineLength)
 
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
