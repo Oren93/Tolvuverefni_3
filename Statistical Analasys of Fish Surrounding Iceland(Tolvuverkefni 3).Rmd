@@ -11,6 +11,20 @@ library(readr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+knitr::opts_chunk$set(class.source = "chunk")
+# really cool staff:
+theme_set(theme_dark()+theme(
+  plot.background = element_rect(fill = "#929292"),
+  plot.title = element_text(color="white", size=18, face="bold"),
+  panel.background = element_rect(fill = "#bdcdff",
+                                  colour = "lightblue",
+                                  size = 0.5, linetype = "solid"),
+  panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                  colour = "white"), 
+  panel.grid.minor = element_line(size = 0.25, linetype = 'dashed',
+                                  colour = "white"),
+  axis.text = element_text(color="#ffffff")
+))
 ```
 
 ## a)
@@ -124,7 +138,7 @@ unloadNamespace("plyr") # unloading because everything else breaks while it's lo
 #percent of fish of breeding age by quadrant
 ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
-  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+
   labs(title="Percentage of fish by sea quadrant",x="quadrant")
 ```
 
@@ -133,7 +147,7 @@ Here we have the amount of breeding and non breeding fish from each area. Note t
 #amount of fish of breeding age by quadrant
 ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
-  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+
   labs(title="Number of fish by sea quadrant",x="quadrant")
 rm(adulthood, NE,NW,SE,SW,count)
 ```
@@ -360,14 +374,13 @@ rm(Repl,result,p_value,xyind,combineLength)
 
 
 ```{r, message=FALSE, warning=FALSE}
-theme_set(theme_dark())
 library("sf")
 library("rnaturalearth")##
 library("rnaturalearthdata")##
 library("rgeos")
 ```
 
-```{r,dpi=150, fig.width=10, fig.height=8, message=FALSE, warning=FALSE}
+```{r,dpi=150,  message=FALSE, warning=FALSE}
 #!!!!!!!!!!!!!!!!!!!!
 # IMPORTANT: Before turing in, we should change dpi=150 to dpi= 900 for a better resolution plot, should remain low for now to speed up the knitting proccess when we constantly knit for testing 
 #!!!!!!!!!!!!!!!!!!!!!!
@@ -387,10 +400,14 @@ ggplot(data = world) +
   labs(x="Longitude", y="Latitude",title="Iceland",
        subtitle = paste0("(", nrow(sites), " spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-  geom_text(data=sites,aes(x=longitude,y=latitude,label= paste0("(", abs(x),",",y,")")),
-          hjust=0, vjust=0, size=3,angle=30,
+  geom_text(data=sites,aes(x=longitude,y=latitude,
+          label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
+            hjust=0, vjust=0, size=3,angle=30,
           colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
-  ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")
+  ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")+
+  theme(panel.background = element_rect(fill = "#1bb0b5",
+                                  colour = "lightblue",
+                                  size = 0.5, linetype = "solid"))
 
 rm(reitir, x, y, world, sites)
 
@@ -407,6 +424,12 @@ body {
 background: black;
 color: white;
 }
+
+.chunk {
+  background-color: #1f1f1f;
+  border: 2px solid darkgrey;
+  color: white;
+  folt-weight: bold;
 
 .table {
   padding-top: 20em;
