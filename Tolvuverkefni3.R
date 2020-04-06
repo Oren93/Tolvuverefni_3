@@ -316,67 +316,7 @@ ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
 # /^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 
-# Bonus attempt
-  # need to sort out and remove useless libraries
-#library(tidyverse)
-#library(knitr)    
-#library(broom)
-#library(stringr)
-#library(modelr)
-#library(forcats)
-#library(ggmap)
-#library(maps)
-library(sf)## for the different approach
-theme_set(theme_dark())
-library("sf")
-#library("sp")
-library("rnaturalearth")##
-library("rnaturalearthdata")##
-#library("rgeos")
-
-world <- ne_countries(scale = "medium", returnclass = "sf")
-class(world)
-
-## not related. beautiful population size map of the world
-ggplot(data = world) +
-  geom_sf(aes(fill = pop_est)) +
-  scale_fill_viridis_c(option = "plasma", trans = "sqrt")
-## blue map of iceland
-ggplot(data = world) +
-  geom_sf(color = "black", fill = "blue")+
-  coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-  xlab("Longitude") + ylab("Latitude") +
-  ggtitle("World map", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))
-
-##
-reitir<-unique(oo$area)
-x<-r2d(reitir)$lon
-y<-r2d(reitir)$lat
-sites <- data.frame(longitude=x, latitude = y)
-
-## Icelandic map with fish coordinates (need to beautify, text overlaps)
-ggplot(data = world) +
-  geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
-  geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
-             shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
-  labs(x="Longitude", y="Latitude",title="Iceland",
-       subtitle = paste0("(", nrow(sites), " spots)"))+
-  coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-  geom_text(data=sites,aes(x=longitude,y=latitude,label= paste0("(", abs(x),",",y,")")),
-          hjust=0, vjust=0, size=3,angle=30,
-          colour="yellow",nudge_y=-0.12,nudge_x=-0.7)
-
-#different approach
-sites <- st_as_sf(sites, coords = c("longitude", "latitude"), 
-                  crs = 4326, agr = "constant")
-
-ggplot(data = world) +
-  geom_sf(color = "black", fill = "blue") +
-  geom_sf(data = sites, size = 4, shape = 23, fill = "red") +
-  ggtitle("Fish around Iceland", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))+
-  coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)
-
-rm(reitir, x, y, world, sites)
-
-
-
+# this code suppose to knit plots with higher resolution but it doesn't work perfectly
+#```{r setup, include=FALSE}
+#knitr::opts_chunk$set(dpi=400,fig.width=5)
+#```
