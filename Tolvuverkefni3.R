@@ -208,32 +208,30 @@ rm(get_normal_density,oo_long,normaldens)
 
 
 # g lið is Ready
-
-#set.seed(0601)
-#tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
-#                                sample(combineLength, 50),
-#                                paired = TRUE)$statistic,
-#                                simplify = TRUE )
-#a <- c()
-#for (i in 1:length(tTest)){
-#  if (abs(tTest[i]) > result)
-#    a[i] <- 1
-#  else
-#    a[i] <- 0
-#}
-#a <- sum(a) 
-
+set.seed(0601)
+tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
+                                sample(combineLength, 50),
+                                paired = TRUE)$statistic,
+                                simplify = TRUE )
+a <- c()
+for (i in 1:length(tTest)){
+  if (abs(tTest[i]) > result)
+    a[i] <- 1
+  else
+    a[i] <- 0
+}
+a <- sum(a) 
 ## Teacher's approach, probably better to use, NOTE: result is different
 xyind <-c(rep(1,50),rep(2,50))
 Repl <- 5000
 set.seed(0601)
-p_value <- sum(
+tTest <- sum(
   replicate(
     Repl,
     result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
   )
 )/Repl
-rm(Repl,result,p_value,xyind,combineLength)
+rm(Repl,result,tTest,xyind,combineLength, a ,i )
 
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
@@ -278,29 +276,35 @@ M.L <-function(l) # Mass as a function of length
   exp(ln_mass)
 }
 #_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-
-# j part (NOTE: I did not fully understand the instructions!)
+
+# j part
 # create a data frame of original fish length and calculated fish mass to compare to original fish mass
 len <- rand_quadrant_50$fish_length
 calc_Mass<-M.L(len)
 compare <- tibble(x=len, y=calc_Mass)
 # plotting, expected to look similar to the first graph of part i
 ggplot(compare, aes(x = x, y = y/1000))+
-  geom_point(data = compare, aes( y = y/1000), size = 1.5, 
-             shape = 21, fill = "red")+
-  geom_smooth(method = "loess")  + theme_light()+
+  geom_point(data = rand_quadrant_50, aes(x=fish_length, y = fish_mass/1000), size = 1.5, 
+             shape = 21, fill = "green")+
+  geom_smooth(method = "loess", colour="red")  + theme_light()+
   labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")+
-  stat_smooth(method='lm', se=FALSE)
+#  stat_smooth(method='lm', se=FALSE)+
+stat_smooth(data = rand_quadrant_50, aes(x=fish_length, y = fish_mass/1000),method='lm', se=FALSE)
 
 # plotting natural log of estimated weight as a function of ln(length)
 ggplot(compare, aes(x = log(x), y = log(y)))+
   geom_point(data = compare, aes( y = log(y)), size = 1.5, 
              shape = 21, fill = "red")+
-  geom_smooth(method = "loess")  + theme_light()+ # same line as the line the teacher wants us to use
+  geom_smooth(method = "lm", se=FALSE)  + theme_light()+ # same line as the line the teacher wants us to use
   labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")
 #  stat_smooth(method='lm', se=FALSE)
 
 #`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','
 # k part
+
+litid <- lm(fish_length~fish_age, data=rand_quadrant)
+stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
+anova(litid, stort)
 
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
   geom_boxplot(fill = "#00e5ff", colour = "#1418ff") + labs(y="length", x="age",
@@ -315,10 +319,46 @@ ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
                                     colour = "white")
   )
 
+
+Res.Df   RSS    Df    Sum of Sq      F      Pr(>F)    
+1        1326    71896                                  
+2        1317    60811    9        11085    26.674   < 2.2e-16 ***
+  
+
 # /^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 
+# Bonus question
 # this code suppose to knit plots with higher resolution but it doesn't work perfectly
 #```{r setup, include=FALSE}
 #knitr::opts_chunk$set(dpi=400,fig.width=5)
 #```
+theme_set(theme_dark())
+library("sf")
+library("rnaturalearth")##
+library("rnaturalearthdata")##
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+reitir<-unique(oo$area)
+x<-r2d(reitir)$lon
+y<-r2d(reitir)$lat
+sites <- data.frame(longitude=x, latitude = y)
+
+## Icelandic map with fish coordinates (need to beautify, text overlaps)
+ggplot(data = world) +
+  geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
+  geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
+             shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
+  labs(x="Longitude", y="Latitude",title="Iceland",
+       subtitle = paste0("(", nrow(sites), " spots)"))+
+  coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
+  geom_text(data=sites,aes(x=longitude,y=latitude,label= paste0("(", abs(x),",",y,")")),
+            hjust=0, vjust=0, size=3,angle=30,
+            colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
+  ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")
+
+rm(reitir, x, y, world, sites)
+
+  

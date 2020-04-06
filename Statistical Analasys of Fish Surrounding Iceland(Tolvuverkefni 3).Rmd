@@ -262,18 +262,14 @@ fish_tbl = rbind(q1, q2)
 To test if there is a statistically significant difference between the means of the two areas we can use an independent t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01 (or $\pm$ 2.04 depending on who you ask(df = 30)). The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code. 
 
 ```{r}
-area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
-                 drop = TRUE)
-area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
-                drop = TRUE)
+area1 <- qu1$fish_length
+area2 <- qu2$fish_length
 
 result = t.test(area1, area2, paired = TRUE)
+combineLength <- c(q1,q2)$fish_length 
 
-combineLength <- c(q1,q2)$fish_length # to be used later
-result <- abs(result$statistic)
-rm(q1,q2,qu1,qu2,area1,area2) # neccessary data kept, anything else removed 
+rm(qu1,qu2,area1,area2) # neccessary data kept, anything else removed 
 ```
-
 
 We find that the t value or the result is `r result$statistic` and the p-value is `r result$p.value`. Which means we can say, with confidence that $H_0$ is rejected since the the t value is in the range of $H_1$. The p value also supports this result as `r result$p.value` is considerably smaller than the generally accepted 0.05 threshold.
 
@@ -313,15 +309,16 @@ As we can see, NW and SW follow a normal disribution fairly closely. SE is less 
 
 ## g)
 
-
+==
 ```{r}
+result <- abs(result$statistic)
 xyind <-c(rep(1,50),rep(2,50))
 Repl <- 5000
 set.seed(0601)
-p_value <- sum(
+tTest <- sum(
   replicate(
     Repl,
-    result < abs( t.test(combineLengt[hsample(1:length(combineLength),100)] ~ xyind )$statistic )
+    result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
   )
 )/Repl
 rm(Repl,result,p_value,xyind,combineLength)
@@ -370,7 +367,10 @@ library("rnaturalearthdata")##
 library("rgeos")
 ```
 
-```{r,dpi=900, fig.width=10, fig.height=8, message=FALSE, warning=FALSE}
+```{r,dpi=150, fig.width=10, fig.height=8, message=FALSE, warning=FALSE}
+#!!!!!!!!!!!!!!!!!!!!
+# IMPORTANT: Before turing in, we should change dpi=150 to dpi= 900 for a better resolution plot, should remain low for now to speed up the knitting proccess when we constantly knit for testing 
+#!!!!!!!!!!!!!!!!!!!!!!
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
 
@@ -398,4 +398,24 @@ rm(reitir, x, y, world, sites)
 
 
 
+```
+
+```{r results="asis", echo=FALSE}
+cat("
+<style>
+body {
+background: black;
+color: white;
+}
+
+.table {
+  padding-top: 20em;
+   width: 40%;
+   margin: 0 auto;
+   margin-bottom: 2em;
+}
+th, td, tr {
+        border: 1px solid white;}
+</style>
+")
 ```
