@@ -16,7 +16,7 @@ knitr::opts_chunk$set(class.source = "chunk")
 theme_set(theme_dark()+theme(
   plot.background = element_rect(fill = "#929292"),
   plot.title = element_text(color="white", size=18, face="bold"),
-  panel.background = element_rect(fill = "#bdcdff",
+  panel.background = element_rect(fill = "#ababc2",
                                   colour = "lightblue",
                                   size = 0.5, linetype = "solid"),
   panel.grid.major = element_line(size = 0.5, linetype = 'solid',
@@ -347,11 +347,46 @@ rm(Repl,result,p_value,xyind,combineLength)
 ```
 
 
-## h)
+## i)
+We previously let the system choose a quadrant from the 2 quadrants we worked with. The system chose `r rand_quadrant_50$quadrant[1]`. We keep the database of this quadrant and a data base of the 50 fish sample taken from this quadrant in the variables "rand_quadrant" and "rand_quadrant_50".
+Here is a plot of the fish weight as of it's length.
+
+```{r}
+ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
+  geom_point(data = rand_quadrant_50, aes( y = fish_mass/1000), size = 1, 
+             shape = 21, fill = "red")+
+  geom_smooth(method = "loess")  +
+  labs(x="length (cm)",y="Weight (Kg)",
+       title = paste0("Fish weight by length in the ",rand_quadrant_50$quadrant[1] , " area"))
+```
+
+
+Many natural fenomenas have a linear regression of the natural logarithm. We will see if that the case here as well by plotting a graph with thesame data as above for the natural logarithm of both axis
 
 
 ```{r}
+ggplot(rand_quadrant_50, aes(x = log(fish_length), y = log(fish_mass)))+
+  geom_point(data = rand_quadrant_50, aes( y = log(fish_mass)), size = 1, 
+             shape = 21, fill = "red")+
+  geom_smooth(method = "loess")  +
+  labs(x="ln(length, cm)",y="ln(weight, g)",
+       title=paste0("Natural log of weight by length in the ",rand_quadrant_50$quadrant[1] , " area"))
+```
 
+```{r}
+formula <- lm(log(rand_quadrant_50$fish_mass) ~ log(rand_quadrant_50$fish_length))
+q <- tibble(x=log(rand_quadrant_50$fish_length), y=log(rand_quadrant_50$fish_mass))
+m <- formula$coefficients[2]
+a <- formula$coefficients[1]
+l <- rand_quadrant_50$fish_length[25]
+
+# formula for predicting a fish weight:
+fit <-function(l) # Mass as a function of length
+{
+  x <- log(l)
+  ln_mass <- a + m*x
+  exp(ln_mass)
+}
 ```
 
 
@@ -421,7 +456,7 @@ rm(reitir, x, y, world, sites)
 cat("
 <style>
 body {
-background: black;
+background: #1a1a1a;
 color: white;
 }
 
@@ -433,7 +468,7 @@ color: white;
 
 .table {
   padding-top: 20em;
-   width: 40%;
+   width: 50%;
    margin: 0 auto;
    margin-bottom: 2em;
 }

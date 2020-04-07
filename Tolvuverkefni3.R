@@ -159,16 +159,6 @@ samp[1] # tp print which area q1 got
 samp[2] # same with q2
 rm(samp)
 
-#temp column
-#oo <- oo %>% mutate(quadrant_num = recode_factor
-#                    (quadrant, "NE"="1", "NW"="2",
-#                      "SW"="3", "SE"="4"))
-#creates temp dataframe with random quadrants
-#set.seed(0601)
-#q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
-#set.seed(0601)
-#q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
-
 #takes 50 random values from the temp dataframes
 set.seed(0601)
 qu1 = sample_n(q1 ,50)
@@ -183,13 +173,10 @@ if (sample(c(1,2),1)==1) {# letting the system choose for us one of the quadrant
   rand_quadrant_50 <- qu2
   rand_quadrant <- q2
   }
+
 # e)
 area1 <- qu1$fish_length
 area2 <- qu2$fish_length
-#area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
-#                 drop = TRUE)
-#area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
-#                drop = TRUE)
 
 result = t.test(area1, area2, paired = TRUE)
 
@@ -290,7 +277,7 @@ a <- formula$coefficients[1]
 l <- rand_quadrant_50$fish_length[25]
 
 # formula for predicting a fish weight:
-M.L <-function(l) # Mass as a function of length
+fit <-function(l) # Mass as a function of length
 {
   x <- log(l)
   ln_mass <- a + m*x
@@ -337,6 +324,7 @@ age_est_len <-
     y = predict(litid)
   )
 
+
 litid %>% broom::tidy()
 stort %>% broom::tidy()
 #><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
@@ -377,13 +365,16 @@ ggplot(data = world) +
   geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
              shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
-  labs(x="Longitude", y="Latitude",title="Iceland",
-       subtitle = paste0("(", nrow(sites), " spots)"))+
+  labs(x="Longitude", y="Latitude",title="Iceland's fishing water",
+       subtitle = paste0("(", nrow(sites), " fishing spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
   geom_text(data=sites,aes(x=longitude,y=latitude,
-          label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
+                           label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
             hjust=0, vjust=0, size=3,angle=30, fontface="bold",
             colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
-  ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")
+  ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")+
+  theme(panel.background = element_rect(fill = "#1bb0b5",
+                                        colour = "lightblue",
+                                        size = 0.5, linetype = "solid"))
 
 rm(reitir, x, y, world, sites)
