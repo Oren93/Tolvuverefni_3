@@ -3,6 +3,21 @@ library(readr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+# really cool staff:
+theme_set(theme_dark()+theme(
+  plot.background = element_rect(fill = "#929292"),
+  plot.title = element_text(color="white", size=18, face="bold"),
+  panel.background = element_rect(fill = "#bdcdff",
+                                  colour = "lightblue",
+                                  size = 0.5, linetype = "solid"),
+  panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                  colour = "white"), 
+  panel.grid.minor = element_line(size = 0.25, linetype = 'dashed',
+                                  colour = "white"),
+  axis.text = element_text(color="#ffffff")
+))
+
+
 oo <- read.csv(file = 'data98.csv', sep =',')
 oo <- subset(oo, select = -c(recid,vf))
 # Change the names to more usefull names
@@ -69,7 +84,7 @@ adulthood <- c('Breeding', 'Non_breeding')
 fish_count <- tibble(adulthood,NE,NW,SW,SE)
 fish_count <- gather(fish_count,key=area, value=count,
                 c(NE,NW,SW,SE))
-library(plyr) # needed only for ddply
+library(plyr) # needed only for ddply, to get the percentage of fish when a quadrant is the whole
 fish_count <- ddply(fish_count,.(area),transform,percent = 100*count/sum(count))
 unloadNamespace("plyr") # # unloading because everything else breaks while it's loaded.
 
@@ -83,14 +98,14 @@ knitr::kable(tibble(adulthood,NE,NW,SW,SE),
 #percent of fish of breeding age by quadrant
 ggplot(fish_count, aes(fill=adulthood, y=percent, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
-  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+
   labs(title="Percent of adult and young fish per quadrant",subtitle = "(total in each quadrant is 100%)",
        x="quadrant")
 
 #amount of fish of breeding age by quadrant
 ggplot(fish_count, aes(fill=adulthood, y=count, x=area)) + 
   geom_bar(position="dodge", stat="identity") +
-  scale_fill_manual(values=c("#26dbff", "#fff700"))+ theme_linedraw()+
+  scale_fill_manual(values=c("#26dbff", "#fff700"))+
   labs(title="Number of fish by sea quadrant",x="quadrant")
 
 rm(adulthood, NE,NW,SE,SW,fish_count)
@@ -123,11 +138,13 @@ ggplot(age_ordered, aes(x = age, y = length))+
            shape = 21, fill = "red")+
   geom_smooth(method = "loess") 
 # Histogram:
-ggplot(fish_by_age, aes(x=age,y=Avg_length)) + geom_bar(position="dodge", stat="identity")+
-  theme_linedraw() + labs(title="Length of fish by age")
+ggplot(fish_by_age, aes(x=age,y=Avg_length)) + geom_bar(position="dodge", stat="identity",
+        fill=rainbow(15),col="black")+
+  labs(title="Length of fish by age")
 # Box plot:
 ggplot(oo, aes(x=as.factor(fish_age),y=fish_length)) +
-  geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
+  geom_boxplot(fill=rainbow(14),col="black")+
+  labs(y="length", x="age", title="Length of fish by age")
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
@@ -162,22 +179,22 @@ qu2 = sample_n(q2 ,50)
 rand_quadrant <- q1
 rand_quadrant_50 <- qu1
 set.seed(1009)
-if (sample(c(1,2),1)==1) {
+if (sample(c(1,2),1)==1) {# letting the system choose for us one of the quadrant to be used
   rand_quadrant_50 <- qu2
   rand_quadrant <- q2
   }
 # e)
-
-area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
-                 drop = TRUE)
-area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
-                drop = TRUE)
+area1 <- qu1$fish_length
+area2 <- qu2$fish_length
+#area1 = subset(qu1,  quadrant == qu1$quadrant[25], fish_length,
+#                 drop = TRUE)
+#area2 = subset(qu2,  quadrant == qu2$quadrant[25], fish_length,
+#                drop = TRUE)
 
 result = t.test(area1, area2, paired = TRUE)
 
 combineLength <- c(q1,q2)$fish_length # to be used later
-result <- abs(result$statistic)
-rm(q1,q2,qu1,qu2,area1,area2) # neccessary data kept, anything else removed 
+rm(q1,q2,area1,area2) # neccessary data kept, anything else removed 
 
 # F
 library(reshape2)
@@ -202,12 +219,13 @@ normaldens <-
 ggplot() + geom_histogram(data=oo_long, aes(x=fish_length),binwidth=3)+
   geom_line(data=normaldens,mapping=aes(x=fish_length,y=normal_curve),col="red",size=1)+
   facet_wrap(~quadrant)+
-  labs(x="length")
+  labs(x="length", title="count of fish by length")
 
 rm(get_normal_density,oo_long,normaldens)
 
 
-# g lið is Ready
+# g lið
+result <- abs(result$statistic)
 set.seed(0601)
 tTest <- replicate(n = 5000, t.test(sample(combineLength, 50),
                                 sample(combineLength, 50),
@@ -231,7 +249,7 @@ tTest <- sum(
     result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
   )
 )/Repl
-rm(Repl,result,tTest,xyind,combineLength, a ,i )
+rm(Repl,tTest,xyind,combineLength, a ,i )
 
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
@@ -243,8 +261,11 @@ rm(Repl,result,tTest,xyind,combineLength, a ,i )
   nrow(filter(oo, quadrant == (qu2$quadrant[25])))
  
 res <- prop.test(x = p1*100, n = 50, p = p2, correct = FALSE)
-
-
+# Throws:
+# Error in prop.test(x = p1 * 100, n = 50, p = p2, correct = FALSE) : 
+# elements of 'x' must not be greater than those of 'n'
+# Suggestion:
+# res <- prop.test(x = p1, n = 50, p = p2, correct = FALSE)
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 #i)
@@ -287,17 +308,19 @@ ggplot(compare, aes(x = x, y = y/1000))+
   geom_point(data = rand_quadrant_50, aes(x=fish_length, y = fish_mass/1000), size = 1.5, 
              shape = 21, fill = "green")+
   geom_smooth(method = "loess", colour="red")  + theme_light()+
-  labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")+
+  labs(x="length (cm)",y="weight (Kg)",title="Estimated fish weight by length",
+       subtitle = "point are the original weight, red is the estimated weight")+
 #  stat_smooth(method='lm', se=FALSE)+
 stat_smooth(data = rand_quadrant_50, aes(x=fish_length, y = fish_mass/1000),method='lm', se=FALSE)
 
 # plotting natural log of estimated weight as a function of ln(length)
 ggplot(compare, aes(x = log(x), y = log(y)))+
-  geom_point(data = compare, aes( y = log(y)), size = 1.5, 
+  geom_point(data = rand_quadrant_50, aes(x=log(fish_length), y = log(fish_mass)), size = 1.5, 
              shape = 21, fill = "red")+
-  geom_smooth(method = "lm", se=FALSE)  + theme_light()+ # same line as the line the teacher wants us to use
-  labs(x="Original length (cm)",y="estimated weight (Kg)",title="Estimated fish weight by length")
-#  stat_smooth(method='lm', se=FALSE)
+  geom_smooth(method = "lm", se=FALSE) + # same line as the line the teacher wants us to use
+  labs(x="length (cm)",y="weight (Kg)",title="Estimated fish weight by length",
+       subtitle = "point are the original weight, red is the estimated weight")
+#  stat_smooth(method='lm', se=FALSE, col="white")
 
 #`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','`','
 # k part
@@ -307,20 +330,11 @@ stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
 anova(litid, stort)
 
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
-  geom_boxplot(fill = "#00e5ff", colour = "#1418ff") + labs(y="length", x="age",
-  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))+
-  theme( # just playing with colours
-    panel.background = element_rect(fill = "#ffb780",
-                                    colour = "lightblue",
-                                    size = 0.5, linetype = "solid"),
-    panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                    colour = "white"), 
-    panel.grid.minor = element_line(size = 0.25, linetype = 'dashed',
-                                    colour = "white")
-  )
+  geom_boxplot( colour = "#1418ff",fill=rainbow(11)) + labs(y="length", x="age",
+  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
 
 
-Res.Df   RSS    Df    Sum of Sq      F      Pr(>F)    
+         Res.Df   RSS    Df    Sum of Sq      F      Pr(>F)    
 1        1326    71896                                  
 2        1317    60811    9        11085    26.674   < 2.2e-16 ***
   
@@ -354,11 +368,10 @@ ggplot(data = world) +
   labs(x="Longitude", y="Latitude",title="Iceland",
        subtitle = paste0("(", nrow(sites), " spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-  geom_text(data=sites,aes(x=longitude,y=latitude,label= paste0("(", abs(x),",",y,")")),
-            hjust=0, vjust=0, size=3,angle=30,
+  geom_text(data=sites,aes(x=longitude,y=latitude,
+          label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
+            hjust=0, vjust=0, size=3,angle=30, fontface="bold",
             colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
   ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")
 
 rm(reitir, x, y, world, sites)
-
-  
