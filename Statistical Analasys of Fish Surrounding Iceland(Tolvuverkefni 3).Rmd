@@ -323,21 +323,28 @@ As we can see, NW and SW follow a normal disribution fairly closely. SE is less 
 
 ## g)
 
-==
+Next, to demonstrate that we are sure that our results from part e) are accurate we will run the same t test 5000 times. This is also called the randomization test. If we combinine the fish data from both quadrants into one dataframe and randomly take two samples of 50 unique fish (i.e. no duplicate data) 5000 times, we can run a t test on each sample pair and determine if the original t test from part e) was accurate. By testing so many different combinations of fish we are essentially trying to bring fourth whatever uncertainty the orignal t test had.
+
 ```{r}
 result <- abs(result$statistic)
 xyind <-c(rep(1,50),rep(2,50))
 Repl <- 5000
 set.seed(0601)
-tTest <- sum(
+test <- sum(
   replicate(
     Repl,
     result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
   )
 )/Repl
-rm(Repl,result,p_value,xyind,combineLength)
 ```
 
+The result of this test is a p-value, which describes how often out of the 5000 tests the t test accepted the null hypothesis. If the t test happened to have exactly a 95% confidence interval we would expect the p value to be around $\frac{0.05 \cdot 5000}{5000}$ since we'd expect that around 5% of the time a random sample would accept the null hypothesis.
+
+However our reult is simply `r test`. Which indicates that the original t test would have reject the null hypothesis with a far greater confidence interval than 95%. This result woudl suggest that the actual confidence of this test is less than or around $\frac{1}{5000} = 0.0002$ or 0.02%
+
+```{r}
+rm(Repl,result,xyind,combineLength)
+```
 
 ## h)
 
@@ -347,7 +354,7 @@ rm(Repl,result,p_value,xyind,combineLength)
 ```
 
 
-## h)
+## i)
 
 
 ```{r}
@@ -355,7 +362,7 @@ rm(Repl,result,p_value,xyind,combineLength)
 ```
 
 
-## h)
+## j)
 
 
 ```{r}
