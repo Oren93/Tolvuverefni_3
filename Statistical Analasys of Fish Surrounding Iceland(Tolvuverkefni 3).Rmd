@@ -20,7 +20,7 @@ theme_set(theme_dark()+theme(
                                   colour = "lightblue",
                                   size = 0.5, linetype = "solid"),
   panel.grid.major = element_line(size = 0.5, linetype = 'solid',
-                                  colour = "white"), 
+                                  colour = "white"),
   panel.grid.minor = element_line(size = 0.25, linetype = 'dashed',
                                   colour = "white"),
   axis.text = element_text(color="#ffffff")
@@ -107,7 +107,7 @@ oo <- mutate(oo, breeding_age2 = case_when(
 
 ## b)
 
-Now we construct a table that shows the total amount of sexually mature and immature fish that we caught in each area. 
+Now we construct a table that shows the total amount of sexually mature and immature fish that we caught in each area.
 ```{r}
 NE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
         nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "NE")))
@@ -121,7 +121,7 @@ adulthood <- c('Breeding', 'Non_breeding')
 count <- tibble(adulthood,NE,NW,SW,SE)
 
 knitr::kable(tibble(adulthood,NE,NW,SW,SE),
-      align = 'ccc', table.attr = "class=\"table\"", 
+      align = 'ccc', table.attr = "class=\"table\"",
       format = "html")
 ```
 
@@ -136,7 +136,7 @@ count <- ddply(count,.(area),transform,percent = 100*count/sum(count))
 unloadNamespace("plyr") # unloading because everything else breaks while it's loaded.
 
 #percent of fish of breeding age by quadrant
-ggplot(count, aes(fill=adulthood, y=percent, x=area)) + 
+ggplot(count, aes(fill=adulthood, y=percent, x=area)) +
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+
   labs(title="Percentage of fish by sea quadrant",x="quadrant")
@@ -145,7 +145,7 @@ ggplot(count, aes(fill=adulthood, y=percent, x=area)) +
 Here we have the amount of breeding and non breeding fish from each area. Note that the total fish from a given area doesn't mean anything other than that Hafransóknarstofnun caught fewer fish there. The data does not specify how many trawls were pulled from each area so the fish density cannot be inferred.
 ```{r}
 #amount of fish of breeding age by quadrant
-ggplot(count, aes(fill=adulthood, y=count, x=area)) + 
+ggplot(count, aes(fill=adulthood, y=count, x=area)) +
   geom_bar(position="dodge", stat="identity") +
   scale_fill_manual(values=c("#26dbff", "#fff700"))+
   labs(title="Number of fish by sea quadrant",x="quadrant")
@@ -181,7 +181,7 @@ fish_by_age <- tibble(age,
   count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
 
 knitr::kable(fish_by_age,
-      align = 'ccc', table.attr = "class=\"table\"", 
+      align = 'ccc', table.attr = "class=\"table\"",
       format = "html")
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
@@ -191,9 +191,9 @@ Now let's create two enterpetations of the same data. First we plot fish length 
 
 ```{r, message=FALSE, warning=FALSE}
 ggplot(age_ordered, aes(x = age, y = length))+
-  geom_point(data = fish_by_age, aes( y = Avg_length), size = 4, 
+  geom_point(data = fish_by_age, aes( y = Avg_length), size = 4,
            shape = 21, fill = "red")+
-  geom_smooth(method = "loess") 
+  geom_smooth(method = "loess")
 ```
 
 The red dots represent the average for a given age.
@@ -273,16 +273,16 @@ fish_tbl = rbind(q1, q2)
 ```
 
 ## e)
-To test if there is a statistically significant difference between the means of the two areas we can use an independent t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01 (or $\pm$ 2.04 depending on who you ask(df = 30)). The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code. 
+To test if there is a statistically significant difference between the means of the two areas we can use an independent t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01 (or $\pm$ 2.04 depending on who you ask(df = 30)). The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code.
 
 ```{r}
 area1 <- qu1$fish_length
 area2 <- qu2$fish_length
 
 result = t.test(area1, area2, paired = TRUE)
-combineLength <- c(q1,q2)$fish_length 
+combineLength <- c(q1,q2)$fish_length
 
-rm(qu1,qu2,area1,area2) # neccessary data kept, anything else removed 
+rm(qu1,qu2,area1,area2) # neccessary data kept, anything else removed
 ```
 
 We find that the t value or the result is `r result$statistic` and the p-value is `r result$p.value`. Which means we can say, with confidence that $H_0$ is rejected since the the t value is in the range of $H_1$. The p value also supports this result as `r result$p.value` is considerably smaller than the generally accepted 0.05 threshold.
@@ -305,7 +305,7 @@ get_normal_density <- function(x, binwidth) {
   )
 }
 
-# Creates normally distributed data for each quadrant 
+# Creates normally distributed data for each quadrant
 normaldens <-
   oo %>%
   group_by(quadrant) %>%
@@ -323,21 +323,28 @@ As we can see, NW and SW follow a normal disribution fairly closely. SE is less 
 
 ## g)
 
-==
+Next, to demonstrate that we are sure that our results from part e) are accurate we will run the same t test 5000 times. This is also called the randomization test. If we combinine the fish data from both quadrants into one dataframe and randomly take two samples of 50 unique fish (i.e. no duplicate data) 5000 times, we can run a t test on each sample pair and determine if the original t test from part e) was accurate. By testing so many different combinations of fish we are essentially trying to bring fourth whatever uncertainty the orignal t test had.
+
 ```{r}
 result <- abs(result$statistic)
 xyind <-c(rep(1,50),rep(2,50))
 Repl <- 5000
 set.seed(0601)
-tTest <- sum(
+test <- sum(
   replicate(
     Repl,
     result < abs( t.test(combineLength[sample(1:length(combineLength),100)] ~ xyind )$statistic )
   )
 )/Repl
-rm(Repl,result,p_value,xyind,combineLength)
 ```
 
+The result of this test is a p-value, which describes how often out of the 5000 tests the t test accepted the null hypothesis. If the t test happened to have exactly a 95% confidence interval we would expect the p value to be around $\frac{0.05 \cdot 5000}{5000}$ since we'd expect that around 5% of the time a random sample would accept the null hypothesis.
+
+However our reult is simply `r test`. Which indicates that the original t test would have reject the null hypothesis with a far greater confidence interval than 95%. This result woudl suggest that the actual confidence of this test is less than or around $\frac{1}{5000} = 0.0002$ or 0.02%
+
+```{r}
+rm(Repl,result,xyind,combineLength)
+```
 
 ## h)
 
@@ -353,7 +360,7 @@ Here is a plot of the fish weight as of it's length.
 
 ```{r}
 ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
-  geom_point(data = rand_quadrant_50, aes( y = fish_mass/1000), size = 1, 
+  geom_point(data = rand_quadrant_50, aes( y = fish_mass/1000), size = 1,
              shape = 21, fill = "red")+
   geom_smooth(method = "loess")  +
   labs(x="length (cm)",y="Weight (Kg)",
@@ -363,10 +370,9 @@ ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
 
 Many natural fenomenas have a linear regression of the natural logarithm. We will see if that the case here as well by plotting a graph with thesame data as above for the natural logarithm of both axis
 
-
 ```{r}
 ggplot(rand_quadrant_50, aes(x = log(fish_length), y = log(fish_mass)))+
-  geom_point(data = rand_quadrant_50, aes( y = log(fish_mass)), size = 1, 
+  geom_point(data = rand_quadrant_50, aes( y = log(fish_mass)), size = 1,
              shape = 21, fill = "red")+
   geom_smooth(method = "loess")  +
   labs(x="ln(length, cm)",y="ln(weight, g)",
@@ -390,7 +396,7 @@ fit <-function(l) # Mass as a function of length
 ```
 
 
-## h)
+## j)
 
 
 ```{r}
@@ -417,7 +423,7 @@ library("rgeos")
 
 ```{r,dpi=150,  message=FALSE, warning=FALSE}
 #!!!!!!!!!!!!!!!!!!!!
-# IMPORTANT: Before turing in, we should change dpi=150 to dpi= 900 for a better resolution plot, should remain low for now to speed up the knitting proccess when we constantly knit for testing 
+# IMPORTANT: Before turing in, we should change dpi=150 to dpi= 900 for a better resolution plot, should remain low for now to speed up the knitting proccess when we constantly knit for testing
 #!!!!!!!!!!!!!!!!!!!!!!
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
@@ -430,7 +436,7 @@ sites <- data.frame(longitude=x, latitude = y)
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
   geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
-  geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
+  geom_point(data = sites, aes(x = longitude, y = latitude), size = 1,
              shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
   labs(x="Longitude", y="Latitude",title="Iceland's fishing water",
        subtitle = paste0("(", nrow(sites), " fishing spots)"))+
