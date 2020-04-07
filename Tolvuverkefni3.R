@@ -329,9 +329,21 @@ litid <- lm(fish_length~fish_age, data=rand_quadrant)
 stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
 anova(litid, stort)
 
+#><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
+# Some code from Piazza, IDK what it is
+age_est_len <-
+  data.frame(
+    x = litid$model[['fish_age']],
+    y = predict(litid)
+  )
+
+litid %>% broom::tidy()
+stort %>% broom::tidy()
+#><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
   geom_boxplot( colour = "#1418ff",fill=rainbow(11)) + labs(y="length", x="age",
-  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
+  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))+
+  geom_line(aes(x=litid_likan$x,y=litid_likan$y),col ='red')
 
 
          Res.Df   RSS    Df    Sum of Sq      F      Pr(>F)    
