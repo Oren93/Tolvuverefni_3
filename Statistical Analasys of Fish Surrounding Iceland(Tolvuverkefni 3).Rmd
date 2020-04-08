@@ -66,7 +66,7 @@ r2d <-function(r)
     lat <- lat + 60 + halfb + 0.25
     data.frame(lat = lat, lon = lon)
 }
-#Creates columns of longitude and latitude based off area
+#Creates columns of longitude and latitude based of area
 reitir<-oo$area
 long <- r2d(reitir)$lon
 lat <- r2d(reitir)$lat
@@ -490,7 +490,9 @@ ggplot(data = world) +
   ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")+
   theme(panel.background = element_rect(fill = "#1bb0b5",
                                   colour = "lightblue",
-                                  size = 0.5, linetype = "solid"))
+                                  size = 0.5, linetype = "solid"))+
+  geom_vline(xintercept = -19, col="red",linetype = 'dashed')+
+  geom_hline(yintercept = 65, col="red",linetype = 'dashed')
 
 rm(reitir, x, y, world, sites)
 
