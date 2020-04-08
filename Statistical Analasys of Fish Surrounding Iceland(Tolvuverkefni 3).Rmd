@@ -199,8 +199,9 @@ ggplot(age_ordered, aes(x = age, y = length))+
 The red dots represent the average for a given age.
 
 ```{r}
-ggplot(oo, aes(group=fish_age,y=fish_length)) +
-  geom_boxplot() + labs(y="length", x="age", title="Length of fish by age")
+ggplot(oo, aes(x=as.factor(fish_age),y=fish_length)) +
+  geom_boxplot(fill=rainbow(14),col="black")+
+  labs(y="length", x="age", title="Length of fish by age")
 ```
 
 One of the primary advantages to using the continuous plot is that it is tribial to estmate age or length of a fish from the same population if you know one or the other. Both do suffere from the shortcomings of the data itself but the continuous plot does try to interpolate the mean of the older fish based off the previous data however the accuracy of this estimate is questionable.
@@ -368,23 +369,24 @@ ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
 ```
 
 
-Many natural fenomenas have a linear regression of the natural logarithm. We will see if that the case here as well by plotting a graph with thesame data as above for the natural logarithm of both axis
+Many natural fenomenas have a linear regression of the natural logarithm. We will see if that is the case here as well by plotting a graph with thesame data as above for the natural logarithm of both axis
 
 ```{r}
 ggplot(rand_quadrant_50, aes(x = log(fish_length), y = log(fish_mass)))+
-  geom_point(data = rand_quadrant_50, aes( y = log(fish_mass)), size = 1,
+  geom_point(data = rand_quadrant_50, aes( y = log(fish_mass)), size = 2,
              shape = 21, fill = "red")+
-  geom_smooth(method = "loess")  +
-  labs(x="ln(length, cm)",y="ln(weight, g)",
-       title=paste0("Natural log of weight by length in the ",rand_quadrant_50$quadrant[1] , " area"))
+  labs(x="ln(length, cm)",y="ln(weight, gr)",
+       title=paste0("Natural log of weight by length in the ",rand_quadrant_50$quadrant[1] , " area"))+
+    stat_smooth(method='lm', se=FALSE, col="blue")
+
 ```
+
 
 ```{r}
 formula <- lm(log(rand_quadrant_50$fish_mass) ~ log(rand_quadrant_50$fish_length))
 q <- tibble(x=log(rand_quadrant_50$fish_length), y=log(rand_quadrant_50$fish_mass))
 m <- formula$coefficients[2]
 a <- formula$coefficients[1]
-l <- rand_quadrant_50$fish_length[25]
 
 # formula for predicting a fish weight:
 fit <-function(l) # Mass as a function of length
@@ -395,19 +397,59 @@ fit <-function(l) # Mass as a function of length
 }
 ```
 
+Now we come up with a formula to estimate a fish weight by it's length. Though it is an invertable function, it is better to have length as the independent variable because it is much easier to practically missure.
+$${\huge W\left ( l \right )= e^{a+m*log_e(l)}=e^a*e^{m*log_e(l)}}$$
+so we get $${\huge W\left ( l \right )=e^a*l^m}$$
+$W$ is Weight in gr
 
-## j)
+$l$ is length in cm
 
+$a$ is the number we found, $a =$ `r a`
+
+$m$ is the slope, $m =$ `r m` (makes sense since length is one dimenssion and weight determmined by volume, 3 dimenssion)
+
+## j) Did not understand the fucking instructions!!! but did it almost right I guess
+We now create a data frame of the original fish length as independent variable, and the estimated fish weight based on the length, and then compare with the original weight.
 
 ```{r}
+len <- rand_quadrant_50$fish_length
+calc_Mass <- fit(len)
+compare <- tibble(x=len, y=calc_Mass)
+
+# plotting, expected to look similar to the first graph of part i
+ggplot(compare, aes(x = x, y = y/1000))+
+  geom_point(data = rand_quadrant_50, aes(x=fish_length, y = fish_mass/1000), size = 1.5, 
+             shape = 21, fill = "green")+
+  geom_smooth(method = "loess", colour="red")  + 
+  labs(x="length (cm)",y="weight (Kg)",title="Estimated fish weight by length",
+       subtitle = "point are the original weight, red line is the estimated weight")+
+  stat_smooth(method='lm', se=FALSE,col="blue")
+
+# plotting natural log of estimated weight as a function of ln(length)
+ ggplot(rand_quadrant_50, aes(x=log(fish_length), y = log(fish_mass)))+
+#ggplot(compare, aes(x = log(x), y = log(y)))+
+  geom_point(data = rand_quadrant_50, aes(x=log(fish_length), y = log(fish_mass)), size = 1.5, 
+             shape = 21, fill = "red")+ 
+  geom_smooth(method = "lm", se=FALSE, colour="red") + ## same as geom_line below
+  labs(x="log(length, cm)",y="log(weight, Kg)",title="log of estimated fish weight by log of length",
+       subtitle = "point are the original weight, red line is the estimated weight")+
+  geom_line(data = compare, aes(x=log(x),y=log(y)), colour="red")
 
 ```
 
 
-## h)
-
+## k)
+Text needed
 
 ```{r}
+ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
+  geom_boxplot( colour = "#1418ff",fill=rainbow(11)) + labs(y="length", x="age",
+  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
+
+
+litid <- lm(fish_length~fish_age, data=rand_quadrant)
+stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
+anova(litid, stort)
 
 ```
 
@@ -471,8 +513,9 @@ color: white;
   border: 2px solid darkgrey;
   color: white;
   folt-weight: bold;
-
+}
 .table {
+background-color: rgb(255,255,255,0.11);
   padding-top: 20em;
    width: 50%;
    margin: 0 auto;

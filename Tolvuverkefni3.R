@@ -174,6 +174,7 @@ if (sample(c(1,2),1)==1) {# letting the system choose for us one of the quadrant
   rand_quadrant <- q2
   }
 
+
 # e)
 area1 <- qu1$fish_length
 area2 <- qu2$fish_length
@@ -274,7 +275,7 @@ formula <- lm(log(rand_quadrant_50$fish_mass) ~ log(rand_quadrant_50$fish_length
 q <- tibble(x=log(rand_quadrant_50$fish_length), y=log(rand_quadrant_50$fish_mass))
 m <- formula$coefficients[2]
 a <- formula$coefficients[1]
-l <- rand_quadrant_50$fish_length[25]
+#l <- rand_quadrant_50$fish_length[25]
 
 # formula for predicting a fish weight:
 fit <-function(l) # Mass as a function of length
@@ -288,8 +289,9 @@ fit <-function(l) # Mass as a function of length
 # j part
 # create a data frame of original fish length and calculated fish mass to compare to original fish mass
 len <- rand_quadrant_50$fish_length
-calc_Mass<-M.L(len)
+calc_Mass <- fit(len)
 compare <- tibble(x=len, y=calc_Mass)
+
 # plotting, expected to look similar to the first graph of part i
 ggplot(compare, aes(x = x, y = y/1000))+
   geom_point(data = rand_quadrant_50, aes(x=fish_length, y = fish_mass/1000), size = 1.5, 
@@ -330,8 +332,7 @@ stort %>% broom::tidy()
 #><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
   geom_boxplot( colour = "#1418ff",fill=rainbow(11)) + labs(y="length", x="age",
-  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))+
-  geom_line(aes(x=litid_likan$x,y=litid_likan$y),col ='red')
+  title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
 
 
          Res.Df   RSS    Df    Sum of Sq      F      Pr(>F)    
