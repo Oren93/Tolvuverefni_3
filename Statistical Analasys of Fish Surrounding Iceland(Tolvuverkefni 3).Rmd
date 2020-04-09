@@ -123,10 +123,11 @@ count <- tibble(adulthood,NE,NW,SW,SE)
 knitr::kable(tibble(adulthood,NE,NW,SW,SE),
       align = 'ccc', table.attr = "class=\"table\"",
       format = "html")
+
 ```
 
 
-This plot shows the percentage of breeding and non breeding fish in each area. It is clear that here are large differences between quadrants. The northern quadrants have considerably more breeding fish than the southern quadrants.
+The following plot shows the percentage of breeding and non breeding fish in each area. It is clear that here are large differences between quadrants. The northern quadrants have considerably more breeding fish than the southern quadrants.
 ```{r, warning=FALSE, message=FALSE}
 count <- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
@@ -180,9 +181,10 @@ for (i in 1: max(age_ordered$age)) {
 fish_by_age <- tibble(age,
   count = count_by_age, Avg_Weight=AvgW_by_age,Avg_length = AvgL_by_age, sd_len =sd_by_age)
 
-knitr::kable(fish_by_age,
-      align = 'ccc', table.attr = "class=\"table\"",
-      format = "html")
+knitr::kable(fish_by_age, 
+             align = 'ccc', table.attr = "class=\"table\"",
+             format = "html",
+             col.names = c("age","count","Avg weight (gr)","Avg length (cm)","sd length"))
 
 rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 ```
@@ -208,7 +210,7 @@ One of the primary advantages to using the continuous plot is that it is tribial
 
 ## d)
 Now we create two dataframes with a sample of 50 fish from two random quadrants.
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo= FALSE}
 #Creates a dataframe with 100 random fish from two random quadrants
 #temp column
 oo <- oo %>% mutate(quadrant_num = recode_factor
@@ -231,39 +233,28 @@ q2 = sample_n(q2 ,50)
 ```{r}
 # d)
 #Creates a dataframe with 100 random fish from two random quadrants
-#creates temp dataframe with random quadrants
 set.seed(0601)
 samp <- sample(c("NE","NW","SW","SE"),2)
 q1 = filter(oo, quadrant == samp[1])
 q2 = filter(oo, quadrant == samp[2])
-samp[1] # tp print which area q1 got
-samp[2] # same with q2
-rm(samp)
-
-#temp column
-#oo <- oo %>% mutate(quadrant_num = recode_factor
-#                    (quadrant, "NE"="1", "NW"="2",
-#                      "SW"="3", "SE"="4"))
-#creates temp dataframe with random quadrants
-#set.seed(0601)
-#q1 = filter(oo, quadrant_num == toString(floor(runif(1, min=0, max=4))))
-#set.seed(0601)
-#q2 = filter(oo, quadrant_num == toString(ceiling(runif(1, min=1, max=5))))
-
+Stringify <- paste0("The chosen quadrants are ",samp[1] , " and ", samp[2])
+print(Stringify)
+rm(samp,Stringify)
 #takes 50 random values from the temp dataframes
 set.seed(0601)
 qu1 = sample_n(q1 ,50)
 set.seed(0601)
 qu2 = sample_n(q2 ,50)
 
-# rand_quadrant_50 will be used in part i,j and k later
+# The next two data frames will be used in part i,j and k later
 rand_quadrant <- q1
 rand_quadrant_50 <- qu1
 set.seed(1009)
-if (sample(c(1,2),1)==1) {
+if (sample(c(1,2),1)==1) { # letting the system choose for us one of the quadrant to be used
   rand_quadrant_50 <- qu2
   rand_quadrant <- q2
   }
+
 ```
 
 

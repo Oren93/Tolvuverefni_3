@@ -150,30 +150,27 @@ rm(count_by_age,AvgW_by_age,AvgL_by_age,sd_by_age,age,i)
 
 # d)
 #Creates a dataframe with 100 random fish from two random quadrants
-#creates temp dataframe with random quadrants
 set.seed(0601)
 samp <- sample(c("NE","NW","SW","SE"),2)
 q1 = filter(oo, quadrant == samp[1])
 q2 = filter(oo, quadrant == samp[2])
-samp[1] # tp print which area q1 got
-samp[2] # same with q2
-rm(samp)
-
+Stringify <- paste0("The chosen quadrants are ",samp[1] , " and ", samp[2])
+print(Stringify)
+rm(samp,Stringify)
 #takes 50 random values from the temp dataframes
 set.seed(0601)
 qu1 = sample_n(q1 ,50)
 set.seed(0601)
 qu2 = sample_n(q2 ,50)
 
-# rand_quadrant_50 will be used in part i,j and k later
+# The next two data frames will be used in part i,j and k later
 rand_quadrant <- q1
 rand_quadrant_50 <- qu1
 set.seed(1009)
-if (sample(c(1,2),1)==1) {# letting the system choose for us one of the quadrant to be used
+if (sample(c(1,2),1)==1) { # letting the system choose for us one of the quadrant to be used
   rand_quadrant_50 <- qu2
   rand_quadrant <- q2
-  }
-
+}
 
 # e)
 area1 <- qu1$fish_length
