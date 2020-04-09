@@ -314,18 +314,6 @@ litid <- lm(fish_length~fish_age, data=rand_quadrant)
 stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
 anova(litid, stort)
 
-#><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
-# Some code from Piazza, IDK what it is
-age_est_len <-
-  data.frame(
-    x = litid$model[['fish_age']],
-    y = predict(litid)
-  )
-
-
-litid %>% broom::tidy()
-stort %>% broom::tidy()
-#><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
   geom_boxplot( colour = "#1418ff",fill=rainbow(11)) + labs(y="length", x="age",
   title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
@@ -344,7 +332,6 @@ ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
 #```{r setup, include=FALSE}
 #knitr::opts_chunk$set(dpi=400,fig.width=5)
 #```
-theme_set(theme_dark())
 library("sf")
 library("rnaturalearth")##
 library("rnaturalearthdata")##
@@ -355,25 +342,27 @@ class(world)
 reitir<-unique(oo$area)
 x<-r2d(reitir)$lon
 y<-r2d(reitir)$lat
-sites <- data.frame(longitude=x, latitude = y)
-
+sites <- data.frame(longtitude=x, latitude = y)
+compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.4,63.4))
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
-  geom_sf(color = "black", fill = "blue")+ # Black border and blue filling
-  geom_point(data = sites, aes(x = longitude, y = latitude), size = 1, 
+  geom_sf(color = "black", fill = "#e0e0e0")+ # Black border and blue filling
+  geom_point(data = sites, aes(x = longtitude, y = latitude), size = 1, 
              shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
-  labs(x="Longitude", y="Latitude",title="Iceland's fishing water",
+  labs(x="longtitude", y="Latitude",title="Iceland's fishing water",
        subtitle = paste0("(", nrow(sites), " fishing spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
-  geom_text(data=sites,aes(x=longitude,y=latitude,
-                           label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
+  geom_text(data=sites,aes(x=longtitude,y=latitude,
+            label=reitir),
+            #label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
             hjust=0, vjust=0, size=3,angle=30, fontface="bold",
-            colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
-  theme(panel.background = element_rect(fill = "#1bb0b5",
+            colour="#121212",nudge_y=-0.12,nudge_x=-0.7)+
+  geom_text(data = compass, aes(x=longtitude,y=latitude,label=name),colour="red",size=5)+
+  theme(panel.background = element_rect(fill = "#31b3eb",
                                         colour = "lightblue",
                                         size = 0.5, linetype = "solid"))+
-  geom_vline(xintercept = -19, col="green",linetype = 'dashed')+
-  geom_hline(yintercept = 65, col="green",linetype = 'dashed')+
-ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")
+  geom_vline(xintercept = -19, col="red",linetype = 'dashed')+
+  geom_hline(yintercept = 65, col="red",linetype = 'dashed')+
+ggsave("figure2b.jpg", dpi=150, dev='png', height=8, width=10, units="in")
 
 rm(reitir, x, y, world, sites)
