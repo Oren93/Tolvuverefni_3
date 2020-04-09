@@ -4,8 +4,8 @@ author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz(orr3@hi.is)"
 date: "26/3/2020"
 output: html_document
 ---
-Importing libraries needed
-```{r packages, warning=FALSE, message=FALSE}
+Importing libraries needed and designing the document
+```{r packages, warning=FALSE, message=FALSE, class.source="chunk"}
 library(tidyverse)
 library(readr)
 library(dplyr)

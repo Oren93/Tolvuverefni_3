@@ -372,9 +372,11 @@ ggplot(data = world) +
                            label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
             hjust=0, vjust=0, size=3,angle=30, fontface="bold",
             colour="yellow",nudge_y=-0.12,nudge_x=-0.7)+
-  ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")+
   theme(panel.background = element_rect(fill = "#1bb0b5",
                                         colour = "lightblue",
-                                        size = 0.5, linetype = "solid"))
+                                        size = 0.5, linetype = "solid"))+
+  geom_vline(xintercept = -19, col="green",linetype = 'dashed')+
+  geom_hline(yintercept = 65, col="green",linetype = 'dashed')+
+ggsave("figure2b.jpg", dpi=1000, dev='png', height=8, width=10, units="in")
 
 rm(reitir, x, y, world, sites)
