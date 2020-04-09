@@ -237,9 +237,11 @@ set.seed(0601)
 samp <- sample(c("NE","NW","SW","SE"),2)
 q1 = filter(oo, quadrant == samp[1])
 q2 = filter(oo, quadrant == samp[2])
-Stringify <- paste0("The chosen quadrants are ",samp[1] , " and ", samp[2])
-print(Stringify)
-rm(samp,Stringify)
+```
+The system randomly chose the quadrants `r samp[1]` and `r samp[2]`.
+
+```{r}
+rm(samp)
 #takes 50 random values from the temp dataframes
 set.seed(0601)
 qu1 = sample_n(q1 ,50)
@@ -332,7 +334,7 @@ test <- sum(
 
 The result of this test is a p-value, which describes how often out of the 5000 tests the t test accepted the null hypothesis. If the t test happened to have exactly a 95% confidence interval we would expect the p value to be around $\frac{0.05 \cdot 5000}{5000}$ since we'd expect that around 5% of the time a random sample would accept the null hypothesis.
 
-However our reult is simply `r test`. Which indicates that the original t test would have reject the null hypothesis with a far greater confidence interval than 95%. This result woudl suggest that the actual confidence of this test is less than or around $\frac{1}{5000} = 0.0002$ or 0.02%
+However our reult is simply `r test`. Which indicates that the original t test would have reject the null hypothesis with a far greater confidence interval than 95%. This result woudl suggest that the actual confidence of this test is less than or around $\frac{1}{5000} = 0.0002$ or $0.02$%
 
 ```{r}
 rm(Repl,result,xyind,combineLength)
