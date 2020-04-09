@@ -1,6 +1,6 @@
 ---
 title: "Statistical Analasys of Fish Surrounding Iceland (Tölvuverkefni 3)"
-author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz(orr3@hi.is)"
+author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz (orr3@hi.is)"
 date: "26/3/2020"
 output: html_document
 ---
@@ -12,7 +12,8 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 knitr::opts_chunk$set(class.source = "chunk")
-# really cool staff:
+
+# really cool stuff:
 theme_set(theme_dark()+theme(
   plot.background = element_rect(fill = "#929292"),
   plot.title = element_text(color="white", size=18, face="bold"),
@@ -35,7 +36,7 @@ First we read the csv file and create a database to work with within R. We then 
 #reading .csv file
 oo <- read.csv(file = 'data98.csv', sep =',')
 oo <- subset(oo, select = -c(recid,vf))
-# Change the names to more usefull names
+# Change the names to be more readable
 oo = oo%>%rename("area" = "reit",
                    "sub_area" = "smrt",
                    "trawl_num" = "tog_nr",
@@ -81,7 +82,7 @@ plot(long,lat,type='n')
 text(long,lat,as.character(reitir))
 ```
 
-Next we create four quadrants representing NE, NW, SW, SE and split the areas down based on their coordinates. We also remove the variables that are no longer needed.
+Next we create four quadrants representing NE, NW, SW, SE and split the areas down based on their coordinates. We also remove some unnecessary variables.
 
 ```{r}
 #Creates quadrant column
@@ -107,7 +108,7 @@ oo <- mutate(oo, breeding_age2 = case_when(
 
 ## b)
 
-Now we construct a table that shows the total amount of sexually mature and immature fish that we caught in each area.
+Now we construct a table that shows the total amount of sexually mature and immature fish that were caught in each area.
 ```{r}
 NE <- c(nrow(filter(oo, breeding_age2 ==FALSE, quadrant == "NE")),
         nrow(filter(oo, breeding_age2 ==TRUE, quadrant == "NE")))
@@ -127,7 +128,7 @@ knitr::kable(tibble(adulthood,NE,NW,SW,SE),
 ```
 
 
-The following plot shows the percentage of breeding and non breeding fish in each area. It is clear that here are large differences between quadrants. The northern quadrants have considerably more breeding fish than the southern quadrants.
+The following plot shows the percentage of breeding and non-breeding fish in each area. It is clear that here are large differences between quadrants. The northern quadrants have considerably more breeding fish than the southern quadrants.
 ```{r, warning=FALSE, message=FALSE}
 count <- gather(count,key=area, value=count,
              c(NE,NW,SW,SE))
@@ -153,11 +154,11 @@ ggplot(count, aes(fill=adulthood, y=count, x=area)) +
 rm(adulthood, NE,NW,SE,SW,count)
 ```
 
-Based off this data it can however be seen that the mean age of the fish population is substantially larger where there are more breeding fish.
+Based off this data it can inferred that the two north quadrants have older fish on average based on that there are more breeding fish there.
 
 ## c)
 
-Now we create a table showing various properties of fish based on their age. Note that there were no fish in the data that were 12 year old and only one of each age group above 12. As such the standard deviation of length cannot be calculated in these cases. Also other age groups, in particular 1 and 11 only have a few fish in it. Not really enough to be confident in the standard deviation value. Other than those quirks the data is as one might expect. The average length and weight increase consistently with age until the population starts dying off.
+Now we create a table showing various properties of fish based on their age. Note that there were no fish in the data that were 12 year old and only one of each age group above 12. As such the standard deviation of length cannot be calculated in these cases. Also other age groups, in particular 1 and 11 only have a few fish in it. Not really enough to be confident in the standard deviation value. Other than those quirks the data is good. The average length and weight increase consistently with age until the population starts dying off and hence measurements become inconsistent. It should be noted that very young fish are so small that a trawl will struggle to catch them which likely sways the mean of weight length, et.c. to be higher than it is in reality.
 
 
 ```{r}
@@ -206,7 +207,7 @@ ggplot(oo, aes(x=as.factor(fish_age),y=fish_length)) +
   labs(y="length", x="age", title="Length of fish by age")
 ```
 
-One of the primary advantages to using the continuous plot is that it is tribial to estmate age or length of a fish from the same population if you know one or the other. Both do suffere from the shortcomings of the data itself but the continuous plot does try to interpolate the mean of the older fish based off the previous data however the accuracy of this estimate is questionable.
+One of the primary advantages to using the continuous plot is that it is trivial to estmate age or length of a fish from the same population if you know one or the other. It does not give a good idea of the consistency/variance of the data. The box plot shows the distribution of length much better, which is useful for estimating how accurate a prediction made with the first plot is. Both do suffer from the shortcomings of the data itself but the continuous plot does try to interpolate the mean of the older fish based off the previous data however the accuracy of this estimate is questionable.
 
 ## d)
 Now we create two dataframes with a sample of 50 fish from two random quadrants.
