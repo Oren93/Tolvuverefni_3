@@ -179,7 +179,7 @@ area2 <- qu2$fish_length
 result = t.test(area1, area2, paired = TRUE)
 
 combineLength <- c(q1,q2)$fish_length # to be used later
-rm(q1,q2,area1,area2) # neccessary data kept, anything else removed 
+rm(area1,area2) # neccessary data kept, anything else removed 
 
 # F
 library(reshape2)
@@ -239,17 +239,12 @@ rm(Repl,tTest,xyind,combineLength, a ,i )
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 #h)
-p2 = nrow(filter(oo, breeding_age == TRUE, quadrant == (qu2$quadrant[25])))/
-  nrow(filter(oo, quadrant == (qu2$quadrant[25])))
- 
-res <- prop.test(x = nrow(filter(oo, breeding_age == TRUE, quadrant == (qu1$quadrant[25])))
-                 , n = nrow(filter(oo, quadrant == (qu1$quadrant[25]))),
+
+p2 = nrow(filter(q2, breeding_age == TRUE))/nrow(filter(oo))
+res <- prop.test(x = nrow(filter(q1, breeding_age == TRUE)),
+                 n = nrow(filter(q1)),
                  p = p2, correct = FALSE)
-# Throws:
-# Error in prop.test(x = p1 * 100, n = 50, p = p2, correct = FALSE) : 
-# elements of 'x' must not be greater than those of 'n'
-# Suggestion:
-# res <- prop.test(x = p1, n = 50, p = p2, correct = FALSE)
+
 
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 #i)
@@ -319,11 +314,6 @@ ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
   title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
 
 
-         Res.Df   RSS    Df    Sum of Sq      F      Pr(>F)    
-1        1326    71896                                  
-2        1317    60811    9        11085    26.674   < 2.2e-16 ***
-  
-
 # /^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\,/^\
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 
@@ -342,7 +332,7 @@ class(world)
 reitir<-unique(oo$area)
 x<-r2d(reitir)$lon
 y<-r2d(reitir)$lat
-sites <- data.frame(longtitude=x, latitude = y)
+sites <- data.frame(reitir,longtitude=x, latitude = y)
 compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.4,63.4))
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
