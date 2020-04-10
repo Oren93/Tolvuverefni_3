@@ -318,10 +318,6 @@ ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 
 # Bonus question
-# this code suppose to knit plots with higher resolution but it doesn't work perfectly
-#```{r setup, include=FALSE}
-#knitr::opts_chunk$set(dpi=400,fig.width=5)
-#```
 library("sf")
 library("rnaturalearth")##
 library("rnaturalearthdata")##

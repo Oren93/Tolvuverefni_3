@@ -453,10 +453,7 @@ library("rnaturalearthdata")##
 library("rgeos")
 ```
 After loading the relevant libraries for maps drawing, we can draw Iceland and it's waters, including the fishing spots.
-```{r,dpi=150,  message=FALSE, warning=FALSE}
-#!!!!!!!!!!!!!!!!!!!!
-# IMPORTANT: Before turing in, we should change dpi=150 to dpi= 900 for a better resolution plot, should remain low for now to speed up the knitting proccess when we constantly knit for testing
-#!!!!!!!!!!!!!!!!!!!!!!
+```{r,dpi=800,  message=FALSE, warning=FALSE}
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
 
@@ -467,7 +464,7 @@ sites <- data.frame(reitir,longtitude=x, latitude = y)
 compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.3,63.3))
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
-  geom_sf(color = "black", fill = "#e0e0e0")+ # Black border and blue filling
+  geom_sf(color = "black", fill = "#e0e0e0")+ # Black border
   geom_point(data = sites, aes(x = longtitude, y = latitude), size = 1, 
              shape = 24, fill = "yellow") + # Trinangular shaped yellow marks
   labs(x="longtitude", y="Latitude",title="Iceland's fishing water",
