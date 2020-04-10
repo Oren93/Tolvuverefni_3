@@ -4,6 +4,7 @@ author: "Óðinn Eldon Ragnarsson (oer2@hi.is), Oren Raz (orr3@hi.is)"
 date: "26/3/2020"
 output: html_document
 ---
+
 Importing libraries needed and designing the document
 ```{r packages, warning=FALSE, message=FALSE, class.source="chunk"}
 library(tidyverse)
@@ -196,7 +197,8 @@ Now let's create two enterpetations of the same data. First we plot fish length 
 ggplot(age_ordered, aes(x = age, y = length))+
   geom_point(data = fish_by_age, aes( y = Avg_length), size = 4,
            shape = 21, fill = "red")+
-  geom_smooth(method = "loess")
+  geom_smooth(method = "loess")+
+  labs(y="length, cm", title="Length of fish by age (continuous approximation)")
 ```
 
 The red dots represent the average for a given age.
@@ -214,7 +216,6 @@ Now we create two dataframes with a sample of 50 fish from two random quadrants.
 
 ```{r}
 # d)
-#Creates a dataframe with 100 random fish from two random quadrants
 set.seed(0601)
 samp <- sample(c("NE","NW","SW","SE"),2)
 q1 = filter(oo, quadrant == samp[1])
@@ -226,16 +227,16 @@ The system randomly chose the quadrants `r samp[1]` and `r samp[2]`.
 rm(samp)
 #takes 50 random values from the temp dataframes
 set.seed(0601)
-qu1 = sample_n(q1 ,50)
+q1_50 = sample_n(q1 ,50)
 set.seed(0601)
-qu2 = sample_n(q2 ,50)
+q2_50 = sample_n(q2 ,50)
 
 # The next two data frames will be used in part i,j and k later
 rand_quadrant <- q1
-rand_quadrant_50 <- qu1
+rand_quadrant_50 <- q1_50
 set.seed(1009)
 if (sample(c(1,2),1)==1) { # letting the system choose for us one of the quadrant to be used
-  rand_quadrant_50 <- qu2
+  rand_quadrant_50 <- q2_50
   rand_quadrant <- q2
   }
 
@@ -245,15 +246,15 @@ if (sample(c(1,2),1)==1) { # letting the system choose for us one of the quadran
 The assignment calls for a combined table of the two dataframes but we can just as well use the two different data frames. However a combined table can be created with the following code.
 
 ```{r, eval=FALSE}
-fish_tbl = rbind(qu1, qu2)
+fish_tbl = rbind(q1_50, q2_50)
 ```
 
 ## e)
 To test if there is a statistically significant difference between the means of the two areas we can use an independent t test. For the t test both values need to be normally distributed. We will test with a 95% confidence level giving us a critical value of $\pm$ 2.01 (or $\pm$ 2.04 depending on who you ask(df = 30)). The sample size is 50 which means the degrees of freedom is 49. The null hypothesis $H_0$ is true if the t value is in the interval -2.01 < x < 2.01. In which case we can say with 95% cofnidence that the means of the two samples are from the same population. The The alternative hypotheiss $H_1$ is true if the t value is in the interal x < -2.01 $\cup$ 2.01 < x. In which case we can say that the means are not the same and therefore the two samples are not from an identical population. The actual test can be calculated in R with the following code. 
 
 ```{r}
-area1 <- qu1$fish_length
-area2 <- qu2$fish_length
+area1 <- q1_50$fish_length
+area2 <- q2_50$fish_length
 
 result = t.test(area1, area2, paired = TRUE)
 combineLength <- c(q1,q2)$fish_length
@@ -325,7 +326,7 @@ rm(Repl,result,xyind,combineLength)
 
 ## h)
 
-If we want to verify that the proportion of breeding and non-breeding fish is the same across the two quadrants previouslt tested, we can use a proportion test. This test is usually used to check how representitive a sample is of a population. However we can use the test by taking one quadrant to be a sample of the other quadrant's population. In this case we are testing the proportion of breeding fish to the population of fish but the test should yeild similar results if performed using non-breeding fish. The test will be preformed with a 95% confidence interval(default). In this case the p-value says a lot about the result. A large p value makes the result less certain, however in this case we have a very large sample size and will most likely get a small p-value. The null hypothesis $H_0$ is that the calculated proportion of breeding fish is nearly the same in both quadrants. If this is not the case we reject $H_0$ and the alternative hypothesis $H_1$ is accepted, indicating that proprtion of breeding fish are not the same in both quadrants. 
+If we want to verify that the proportion of breeding and non-breeding fish is the same across the two quadrants previously tested, we can use a proportion test. This test is usually used to check how representitive a sample is of a population. However we can use the test by taking one quadrant to be a sample of the other quadrant's population. In this case we are testing the proportion of breeding fish to the population of fish but the test should yeild similar results if performed using non-breeding fish. The test will be preformed with a 95% confidence interval(default). In this case the p-value says a lot about the result. A large p value makes the result less certain, however in this case we have a very large sample size and will most likely get a small p-value. The null hypothesis $H_0$ is that the calculated proportion of breeding fish is nearly the same in both quadrants. If this is not the case we reject $H_0$ and the alternative hypothesis $H_1$ is accepted, indicating that proprtion of breeding fish are not the same in both quadrants. 
 
 The test is calculated as follows.
 
@@ -425,7 +426,7 @@ ggplot(compare, aes(x = x, y = y/1000))+
 
 
 ## k)
-Text needed
+Now we show a box plot of the fish length by age in the quadrant `r rand_quadrant$quadrant[1]` for all the fishes in that quadrant.
 
 ```{r}
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
@@ -435,7 +436,10 @@ ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
 
 litid <- lm(fish_length~fish_age, data=rand_quadrant)
 stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
-anova(litid, stort)
+#anova(litid, stort)
+knitr::kable(anova(litid, stort),
+      align = 'ccc', table.attr = "class=\"table\"",
+      format = "html")
 
 ```
 
@@ -502,7 +506,7 @@ color: white;
   background-color: #1f1f1f;
   border: 2px solid darkgrey;
   color: white;
-  folt-weight: bold;
+  font-weight: bold;
 }
 .table {
 background-color: rgb(255,255,255,0.11);
