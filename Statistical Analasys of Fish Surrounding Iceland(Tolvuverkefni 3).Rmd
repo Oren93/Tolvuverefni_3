@@ -325,19 +325,24 @@ rm(Repl,result,xyind,combineLength)
 
 ## h)
 
+If we want to verify that the proportion of breeding and non-breeding fish is the same across the two quadrants previouslt tested, we can use a proportion test. This test is usually used to check how representitive a sample is of a population. However we can use the test by taking one quadrant to be a sample of the other quadrant's population. In this case we are testing the proportion of breeding fish to the population of fish but the test should yeild similar results if performed using non-breeding fish. The test will be preformed with a 95% confidence interval(default). In this case the p-value says a lot about the result. A large p value makes the result less certain, however in this case we have a very large sample size and will most likely get a small p-value. The null hypothesis $H_0$ is that the calculated proportion of breeding fish is nearly the same in both quadrants. If this is not the case we reject $H_0$ and the alternative hypothesis $H_1$ is accepted, indicating that proprtion of breeding fish are not the same in both quadrants. 
+
+The test is calculated as follows.
 
 ```{r}
 
-p2 = nrow(filter(q2, breeding_age == TRUE))/nrow(filter(oo))
+p2 = nrow(filter(q2, breeding_age == TRUE))/nrow(q2)
 res <- prop.test(x = nrow(filter(q1, breeding_age == TRUE)),
                  n = nrow(filter(q1)),
                  p = p2, correct = FALSE)
 ```
 
+The actual prortions in this case are, for the first quadrant(sample) `r res$estimate`, and `r p2` for the second quadrant (population). These obviously don't match and since the p-value is `r res$p.value`, we can quite confidently reject $H_0$ and say that the proportion of breeding fish is not the same for the two quadrants. The connfidence interval does not include zero since $H_0$ was rejected.
+
 
 ## i)
-We previously let the system choose a quadrant from the 2 quadrants we worked with. The system chose `r rand_quadrant_50$quadrant[1]`. We keep the database of this quadrant and a data base of the 50 fish sample taken from this quadrant in the variables "rand_quadrant" and "rand_quadrant_50".
-Here is a plot of the fish weight as of it's length.
+We previously let a randomizer choose a quadrant from the 2 quadrants we worked with. It chose `r rand_quadrant_50$quadrant[1]`. We keep the database of this quadrant and a data base of the 50 fish sample taken from this quadrant in the variables "rand_quadrant" and "rand_quadrant_50".
+Here we plot the length and weight of fish from the selected quadrant.
 
 ```{r}
 ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
@@ -349,7 +354,7 @@ ggplot(rand_quadrant_50, aes(x = fish_length, y = fish_mass/1000))+
 ```
 
 
-Many natural fenomenas have a linear regression of the natural logarithm. We will see if that is the case here as well by plotting a graph with thesame data as above for the natural logarithm of both axis
+Many natural phenomena have a linear regression of the natural logarithm. In this case we can plot the natural logarithm of both length and weight and get a straight line. 
 
 ```{r}
 ggplot(rand_quadrant_50, aes(x = log(fish_length), y = log(fish_mass)))+
@@ -361,6 +366,7 @@ ggplot(rand_quadrant_50, aes(x = log(fish_length), y = log(fish_mass)))+
 
 ```
 
+Armed with this knowledge we can create a model to predict the weight of a given fish based on it's length, given it is from the same population.
 
 ```{r}
 formula <- lm(log(rand_quadrant_50$fish_mass) ~ log(rand_quadrant_50$fish_length))
@@ -377,18 +383,18 @@ fit <-function(l) # Mass as a function of length
 }
 ```
 
-Now we come up with a formula to estimate a fish weight by it's length. Though it is an invertable function, it is better to have length as the independent variable because it is much easier to practically missure.
+Now we come up with a model to estimate a fish weight by it's length. Though it is an invertable function, it is better to have length as the independent variable because it is much easier to practically measure.
 $${\huge W\left ( l \right )= e^{a+m*log_e(l)}=e^a*e^{m*log_e(l)}}$$
 so we get $${\huge W\left ( l \right )=e^a*l^m}$$
 $W$ is Weight in gr
 
 $l$ is length in cm
 
-$a$ is the number we found, $a =$ `r a`
+$a$ is a constant $a =$ `r a`
 
 $m$ is the slope, $m =$ `r m` (makes sense since length is one dimenssion and weight determmined by volume, 3 dimenssion)
 
-## j) Did not understand the fucking instructions!!! but did it almost right I guess
+## j)
 We now create a data frame of the original fish length as independent variable, and the estimated fish weight based on the length, and then compare with the original weight.
 
 ```{r}
