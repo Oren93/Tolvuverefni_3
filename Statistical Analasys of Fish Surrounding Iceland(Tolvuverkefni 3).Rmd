@@ -391,9 +391,11 @@ $W$ is Weight in gr
 
 $l$ is length in cm
 
-$a$ is a constant $a =$ `r a`
+$a$ is a constant, $a =$ `r a`
 
 $m$ is the slope, $m =$ `r m` (makes sense since length is one dimenssion and weight determmined by volume, 3 dimenssion)
+
+The model is least accurate for very old and very young fish. 
 
 ## j)
 We now create a data frame of the original fish length as independent variable, and the estimated fish weight based on the length, and then compare with the original weight.
@@ -426,25 +428,30 @@ ggplot(compare, aes(x = x, y = y/1000))+
 
 
 ## k)
-Now we show a box plot of the fish length by age in the quadrant `r rand_quadrant$quadrant[1]` for all the fishes in that quadrant.
+Now we show a box plot of the fish length by age in the quadrant `r rand_quadrant$quadrant[1]` for all the fish in that quadrant.
 
 ```{r}
 ggplot(rand_quadrant, aes(x=as.factor(fish_age),y=fish_length)) +
   geom_boxplot( colour = "#1418ff",fill=rainbow(11)) + labs(y="length", x="age",
   title=paste0("Length of all fish by age in the ",rand_quadrant$quadrant[1] , " area"))
+```
 
+We can create two different linear models to model how length increases with age. The first one assumes a linear relationship the second one estimates the data with several line segments connected. We can compare the two using an ANOVA test, which will tell us how different the two models are.
 
+```{r}
 litid <- lm(fish_length~fish_age, data=rand_quadrant)
 stort <- lm(fish_length~factor(fish_age), data=rand_quadrant)
-#anova(litid, stort)
 knitr::kable(anova(litid, stort),
       align = 'ccc', table.attr = "class=\"table\"",
       format = "html")
 
 ```
 
+as usual the p-value (Pr(>F) here) represents how accurate the result is. Zero is perhaps not quite accurate but it is very low. The F value here indicates how different the model are. The critical F-value, accoring to an online table, is 1.88(assuming 95% confidence interval). Since we have a considerably higher F-value and a very small p-value we can reject the null hypothesis and say that there is a substantial difference between the two models. This tells us that the one-line linear model is substantially less acrurate 
+
 ## Bonus)
 
+To close this out we have a visual representation of the zones and quadrants around Iceland.
 
 ```{r, message=FALSE, warning=FALSE}
 library("sf")
@@ -452,7 +459,7 @@ library("rnaturalearth")##
 library("rnaturalearthdata")##
 library("rgeos")
 ```
-After loading the relevant libraries for maps drawing, we can draw Iceland and it's waters, including the fishing spots.
+After loading the relevant libraries for map drawing, we can draw Iceland and it's waters, including the fishing spots.
 ```{r,dpi=800,  message=FALSE, warning=FALSE}
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
