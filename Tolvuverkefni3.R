@@ -333,7 +333,7 @@ reitir<-unique(oo$area)
 x<-r2d(reitir)$lon
 y<-r2d(reitir)$lat
 sites <- data.frame(reitir,longtitude=x, latitude = y)
-compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.4,63.4))
+compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.3,63.3))
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
   geom_sf(color = "black", fill = "#e0e0e0")+ # Black border and blue filling
@@ -345,14 +345,14 @@ ggplot(data = world) +
   geom_text(data=sites,aes(x=longtitude,y=latitude,
             label=reitir),
             #label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
-            hjust=0, vjust=0, size=3,angle=30, fontface="bold",
-            colour="#121212",nudge_y=-0.12,nudge_x=-0.7)+
+            hjust=0, vjust=0, size=3, fontface="bold",
+            colour="#121212",nudge_y=0.05 ,nudge_x=-0.2)+
   geom_text(data = compass, aes(x=longtitude,y=latitude,label=name),colour="red",size=5)+
   theme(panel.background = element_rect(fill = "#31b3eb",
                                         colour = "lightblue",
                                         size = 0.5, linetype = "solid"))+
   geom_vline(xintercept = -19, col="red",linetype = 'dashed')+
   geom_hline(yintercept = 65, col="red",linetype = 'dashed')+
-ggsave("figure2b.jpg", dpi=150, dev='png', height=8, width=10, units="in")
+ggsave("figure2b.jpg", dpi=800, dev='png', height=8, width=10, units="in")
 
 rm(reitir, x, y, world, sites)
