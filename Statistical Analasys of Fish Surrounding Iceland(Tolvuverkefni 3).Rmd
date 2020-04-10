@@ -452,7 +452,7 @@ library("rnaturalearth")##
 library("rnaturalearthdata")##
 library("rgeos")
 ```
-
+After loading the relevant libraries for maps drawing, we can draw Iceland and it's waters, including the fishing spots.
 ```{r,dpi=150,  message=FALSE, warning=FALSE}
 #!!!!!!!!!!!!!!!!!!!!
 # IMPORTANT: Before turing in, we should change dpi=150 to dpi= 900 for a better resolution plot, should remain low for now to speed up the knitting proccess when we constantly knit for testing
@@ -460,11 +460,11 @@ library("rgeos")
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
 
-reitir<-unique(oo$area)
+reitir<-unique(oo$area) ## comment *, see below
 x<-r2d(reitir)$lon
 y<-r2d(reitir)$lat
 sites <- data.frame(reitir,longtitude=x, latitude = y)
-compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.4,63.4))
+compass <- tibble(name=c("NE","NW","SW","SE"),longtitude=c(-12,-27,-27,-12),latitude=c(67.3,67.3,63.3,63.3))
 ## Icelandic map with fish coordinates (need to beautify, text overlaps)
 ggplot(data = world) +
   geom_sf(color = "black", fill = "#e0e0e0")+ # Black border and blue filling
@@ -474,24 +474,32 @@ ggplot(data = world) +
        subtitle = paste0("(", nrow(sites), " fishing spots)"))+
   coord_sf(xlim = c(min(oo$long), max(oo$long)), ylim = c(min(oo$lat),max(oo$lat)), expand = TRUE)+
   geom_text(data=sites,aes(x=longtitude,y=latitude,
-            label=reitir),
-            #label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
-            hjust=0, vjust=0, size=3,angle=30, fontface="bold",
-            colour="#121212",nudge_y=-0.12,nudge_x=-0.7)+
+            label=reitir), ## comment **, see below
+            hjust=0, vjust=0, size=3, fontface="bold",
+            colour="#121212",nudge_y=0.05 ,nudge_x=-0.2)+
   geom_text(data = compass, aes(x=longtitude,y=latitude,label=name),colour="red",size=5)+
   theme(panel.background = element_rect(fill = "#31b3eb",
                                         colour = "lightblue",
                                         size = 0.5, linetype = "solid"))+
-  geom_vline(xintercept = -19, col="red",linetype = 'dashed')+
-  geom_hline(yintercept = 65, col="red",linetype = 'dashed')+
-ggsave("figure2b.jpg", dpi=150, dev='png', height=8, width=10, units="in")
-
+  geom_vline(xintercept = -19, col="red",linetype = 'solid')+
+  geom_hline(yintercept = 65, col="red",linetype = 'solid')+
+ggsave("figure2b.jpg", dpi=800, dev='png', height=8, width=10, units="in")
+```
+```{r, eval=FALSE}
+Comments about the bonus question:
+The task explanation wasn`t clear enough, and our question regarding it left unanswered in Piazza.
+But we want to show that we know what we are doing so here is an explanation:
+We plot all the fishing locations from the database. If only the fishing spots from the 2 quadrants
+we used before are neccessary, then the line indicated by comment * should be replaced by this line:
+reitir<-unique(rbind(q1,q2)$area)
+The number shown by each coordinate is the area code as shown by the data, to get coordinates like
+(x,y) where x is absolute of longtitude (minus is to repressent West) and y is latitude we should use
+the code
+label= paste0("(", abs(round(x, digits = 1)),",",round(y, digits = 1),")")),
+instead of comment **
+```
+```{r}
 rm(reitir, x, y, world, sites)
-
-
-
-
-
 ```
 
 ```{r results="asis", echo=FALSE}
